@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <meta name="description" content="Une stratégie d'investissement construite avec vous, pour votre patrimoine. Réservez un appel diagnostic confidentiel avec l'équipe de Thomas Mayol.">
+<link rel="preconnect" href="https://connect.facebook.net">
+<link rel="preconnect" href="https://drive.google.com">
+<link rel="preconnect" href="https://app.iclosed.io">
+<link rel="dns-prefetch" href="https://www.facebook.com">
 <title>Investisseurs 3.0 | Votre stratégie d'investissement sur mesure</title>
 
 <!-- ============================================================
@@ -304,6 +308,25 @@
   @keyframes sound-pulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.05); }
+  }
+
+  /* Masques du lecteur Drive : recouvrent la barre de contrôle (durée,
+     pause, avance) en bas et le titre + bouton pop-out en haut */
+  .drive-mask {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 4;
+  }
+  .drive-mask-bottom {
+    bottom: 0;
+    height: 84px;
+    background: linear-gradient(to top, var(--navy) 55%, transparent);
+  }
+  .drive-mask-top {
+    top: 0;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--navy) 45%, transparent);
   }
 
   /* Barre de progression style VTurb : rapide au début, lente ensuite */
@@ -800,7 +823,8 @@
       <a class="cta-btn track-booking" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-investisseurs-3-3" target="_blank" rel="noopener">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
       <p class="cta-note">Confidentiel et sans engagement</p>
       <div class="iclosed-embed">
-        <iframe src="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-investisseurs-3-3" title="Réserver un appel diagnostic"></iframe>
+        <!-- Chargé seulement au moment où le bloc devient visible (60 s), pour accélérer la page -->
+        <iframe data-src="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-investisseurs-3-3" title="Réserver un appel diagnostic"></iframe>
       </div>
     </div>
   </section>
@@ -953,7 +977,7 @@
     // ============================================================
     var YT_VIDEO_ID = '';
     var DRIVE_EMBED_URL = 'https://drive.google.com/file/d/1UngeIN7Qgk9xsndOktiN4MFtL_38jyjZ/preview';
-    var VSL_DURATION_S = 20 * 60; // durée réelle de la VSL, pour la barre de progression
+    var VSL_DURATION_S = 16 * 60 + 33; // durée réelle de la VSL (16:33), pour la barre de progression
     var DELAY_MS = 60 * 1000;     // CTA révélé après 1 minute
 
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1041,18 +1065,36 @@
       facade.addEventListener('click', function () {
         track('VSL_PlayClick');
         startProgress();
+        var vslFrame = document.getElementById('vsl');
         var iframe = document.createElement('iframe');
         iframe.src = DRIVE_EMBED_URL;
         iframe.title = 'Vidéo de présentation Investisseurs 3.0';
         iframe.allow = 'autoplay; fullscreen';
         iframe.allowFullscreen = true;
-        document.getElementById('vsl').appendChild(iframe);
+        vslFrame.appendChild(iframe);
+        // Masques qui recouvrent les contrôles du lecteur Drive
+        // (barre de durée en bas, titre et pop-out en haut)
+        var maskB = document.createElement('div');
+        maskB.className = 'drive-mask drive-mask-bottom';
+        var maskT = document.createElement('div');
+        maskT.className = 'drive-mask drive-mask-top';
+        vslFrame.appendChild(maskB);
+        vslFrame.appendChild(maskT);
         facade.remove();
       });
     }
 
-    // --- CTA après 60 s
+    // --- CTA après 60 s (l'iframe iClosed ne se charge qu'à ce moment-là)
     function revealCta() {
+      var ic = document.querySelector('.iclosed-embed iframe');
+      if (ic && !ic.src) {
+        var url = ic.dataset.src;
+        var qs2 = window.location.search;
+        if (qs2.length > 1) {
+          url += (url.indexOf('?') > -1 ? '&' : '?') + qs2.slice(1);
+        }
+        ic.src = url;
+      }
       document.getElementById('reveal').classList.add('visible');
     }
     if (window.location.hash === '#cta') {
@@ -1076,15 +1118,14 @@
     }, { passive: true });
 
     // --- Transmission des UTM (et autres paramètres d'URL) à iClosed,
-    //     pour savoir quelle pub a généré chaque réservation
+    //     pour savoir quelle pub a généré chaque réservation.
+    //     L'iframe iClosed reçoit les siens dans revealCta().
     var qs = window.location.search;
     if (qs.length > 1) {
       var params = qs.slice(1);
       document.querySelectorAll('a.track-booking').forEach(function (a) {
         a.href += (a.href.indexOf('?') > -1 ? '&' : '?') + params;
       });
-      var ic = document.querySelector('.iclosed-embed iframe');
-      ic.src += (ic.src.indexOf('?') > -1 ? '&' : '?') + params;
     }
 
     // --- Clics sur les boutons de réservation
