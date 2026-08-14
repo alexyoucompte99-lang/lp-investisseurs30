@@ -203,7 +203,47 @@
   }
 
   /* ---------- VSL ---------- */
-  .vsl-section { padding: 40px 0 24px; position: relative; }
+  .vsl-section { padding: 32px 0 24px; position: relative; }
+
+  /* Bandeau d'urgence : deadline evergreen recalée sur minuit chaque jour */
+  .deadline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: fit-content;
+    margin: 0 auto 22px;
+    background: var(--white);
+    border: 1px solid rgba(222, 115, 98, 0.35);
+    border-radius: 100px;
+    padding: 10px 22px;
+    font-size: 0.9rem;
+    color: var(--navy);
+    box-shadow: 0 10px 30px -18px rgba(15, 25, 39, 0.3);
+  }
+  .deadline strong { font-weight: 700; }
+  .deadline-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #de7362;
+    animation: deadline-pulse 1.6s ease infinite;
+  }
+  @keyframes deadline-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(222, 115, 98, 0.45); }
+    50% { box-shadow: 0 0 0 7px rgba(222, 115, 98, 0); }
+  }
+  .deadline-timer {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 1.02rem;
+    letter-spacing: 0.04em;
+    color: #c9503d;
+    font-variant-numeric: tabular-nums;
+    min-width: 5.4em;
+    text-align: center;
+  }
   .vsl-frame {
     position: relative;
     background: var(--navy);
@@ -730,6 +770,11 @@
 
 <section class="vsl-section">
   <div class="wrap">
+    <div class="deadline fx in" role="timer">
+      <span class="deadline-dot" aria-hidden="true"></span>
+      <span>Vidéo disponible jusqu'à <strong>ce soir minuit</strong></span>
+      <span class="deadline-timer" id="deadlineTimer">--:--:--</span>
+    </div>
     <div class="vsl-frame fx in fx-d3" id="vsl">
       <!-- Player VTurb : autoplay muet, overlay "activer le son" et barre
            de progression intelligente gérés nativement par VTurb -->
@@ -744,7 +789,7 @@
   <section class="booking" id="reserver">
     <div class="wrap">
       <h2>Échangeons sur votre situation</h2>
-      <p class="booking-sub">30 minutes en toute confidentialité avec un expert de l'équipe. Un point clair sur votre situation, votre capital et vos objectifs. Vous repartez avec une vision précise, que l'on travaille ensemble ou non.</p>
+      <p class="booking-sub">45 minutes en toute confidentialité avec un expert de l'équipe. Un point clair sur votre situation, votre capital et vos objectifs. Vous repartez avec une vision précise, que l'on travaille ensemble ou non.</p>
       <a class="cta-btn track-booking" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" target="_blank" rel="noopener">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
       <p class="cta-note">Confidentiel et sans engagement</p>
       <div class="iclosed-embed">
@@ -990,7 +1035,7 @@
       <div class="step fx">
         <span class="step-tag">Diagnostic</span>
         <h3>L'appel diagnostic</h3>
-        <p>30 minutes en toute confidentialité. Un point sur votre situation, votre capital disponible et vos objectifs. Un diagnostic honnête, rien à vous vendre.</p>
+        <p>45 minutes en toute confidentialité. Un point sur votre situation, votre capital disponible et vos objectifs. Un diagnostic honnête, rien à vous vendre.</p>
       </div>
       <div class="step fx fx-d1">
         <span class="step-tag">Stratégie</span>
@@ -1024,7 +1069,7 @@
 <section class="final-cta">
   <div class="wrap">
     <h2 class="fx">Votre patrimoine mérite une <em>vraie stratégie</em></h2>
-    <p class="fx fx-d1">30 minutes pour faire le point et voir si notre accompagnement vous correspond. Indépendants, sans produit maison ni commission cachée.</p>
+    <p class="fx fx-d1">45 minutes pour faire le point et voir si notre accompagnement vous correspond. Indépendants, sans produit maison ni commission cachée.</p>
     <span class="fx fx-d2" style="display:inline-block">
       <a class="cta-btn track-booking" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" target="_blank" rel="noopener">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
     </span>
@@ -1086,6 +1131,18 @@
         b.remove();
       });
     });
+
+    // --- Compte à rebours jusqu'à minuit, recalé automatiquement chaque jour
+    var timerEl = document.getElementById('deadlineTimer');
+    function pad2(n) { return n < 10 ? '0' + n : String(n); }
+    function updateDeadline() {
+      var now = new Date();
+      var end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+      var s = Math.max(0, Math.floor((end - now) / 1000));
+      timerEl.textContent = pad2(Math.floor(s / 3600)) + ':' + pad2(Math.floor(s / 60) % 60) + ':' + pad2(s % 60);
+    }
+    updateDeadline();
+    setInterval(updateDeadline, 1000);
 
     // --- CTA après 60 s (l'iframe iClosed ne se charge qu'à ce moment-là)
     function revealCta() {
