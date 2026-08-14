@@ -428,9 +428,12 @@
     grid-template-columns: repeat(5, 1fr);
     gap: 16px;
   }
-  .testi-shorts .tv-facade,
-  .testi-shorts iframe {
+  /* .testi-video.short bat .testi-video iframe (spécificité), sinon le
+     player vertical injecté au clic repasse en 16:9 et s'affiche minuscule */
+  .testi-video.short .tv-facade,
+  .testi-video.short iframe {
     aspect-ratio: 9 / 16;
+    height: auto;
   }
   .testi-videos {
     display: grid;
