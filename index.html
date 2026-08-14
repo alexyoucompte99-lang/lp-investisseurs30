@@ -55,9 +55,10 @@
     --surface: #f6f8f8;
     --navy: #0f1927;
     --navy-soft: #5a6674;
-    --mint: #80d6b5;
-    --mint-deep: #2f9873;
-    --mint-wash: rgba(128, 214, 181, 0.16);
+    /* Palette Valar : vert sauge désaturé, code visuel gestion privée */
+    --mint: #80b9a5;
+    --mint-deep: #52836f;
+    --mint-wash: rgba(128, 185, 165, 0.16);
     --line: rgba(15, 25, 39, 0.09);
     --display: "Satoshi", "Montserrat", -apple-system, "Segoe UI", sans-serif;
     --body: "Montserrat", -apple-system, "Segoe UI", sans-serif;
@@ -124,8 +125,8 @@
     animation: pulse-dot 2s ease infinite;
   }
   @keyframes pulse-dot {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(47, 152, 115, 0.4); }
-    50% { box-shadow: 0 0 0 6px rgba(47, 152, 115, 0); }
+    0%, 100% { box-shadow: 0 0 0 0 rgba(82, 131, 111, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(82, 131, 111, 0); }
   }
 
   /* ---------- Hero ---------- */
@@ -155,7 +156,7 @@
     text-transform: uppercase;
     color: var(--mint-deep);
     background: var(--white);
-    border: 1px solid rgba(47, 152, 115, 0.25);
+    border: 1px solid rgba(82, 131, 111, 0.25);
     border-radius: 100px;
     padding: 8px 18px;
     margin-bottom: 26px;
@@ -209,7 +210,7 @@
     overflow: hidden;
     box-shadow:
       0 30px 70px -28px rgba(15, 25, 39, 0.45),
-      0 0 0 6px rgba(128, 214, 181, 0.12);
+      0 0 0 6px rgba(128, 185, 165, 0.12);
   }
   .vsl-hint {
     text-align: center;
@@ -377,16 +378,14 @@
   /* ---------- Testimonials ---------- */
   .testi-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    max-width: 800px;
-    margin: 0 auto;
+    margin-top: 24px;
   }
   .testi-videos {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    margin-top: 20px;
   }
   .testi-video {
     border-radius: 16px;
@@ -400,6 +399,40 @@
     aspect-ratio: 16 / 9;
     border: 0;
   }
+  .tv-facade {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    background: var(--navy);
+    overflow: hidden;
+  }
+  .tv-facade img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .tv-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(15, 25, 39, 0.4);
+    transition: transform 0.2s ease;
+  }
+  .tv-play svg { margin-left: 3px; }
+  .tv-facade:hover .tv-play { transform: translate(-50%, -50%) scale(1.1); }
   .testi-video figcaption {
     background: var(--surface);
     border-top: 1px solid var(--line);
@@ -454,7 +487,7 @@
     height: 40px;
     border-radius: 50%;
     background: var(--white);
-    border: 1px solid rgba(47, 152, 115, 0.3);
+    border: 1px solid rgba(82, 131, 111, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -490,7 +523,7 @@
   }
   .step:hover {
     transform: translateY(-4px);
-    border-color: rgba(47, 152, 115, 0.4);
+    border-color: rgba(82, 131, 111, 0.4);
     box-shadow: 0 20px 44px -22px rgba(15, 25, 39, 0.22);
   }
   .step::after {
@@ -539,21 +572,11 @@
     padding: 44px;
   }
   .about-photo {
-    width: 210px;
-    height: 250px;
-    border-radius: 14px;
-    background:
-      radial-gradient(ellipse at 50% 25%, var(--mint-wash), transparent 70%),
-      var(--white);
-    border: 1px solid var(--line);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--navy-soft);
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    text-align: center;
+    width: 100%;
+    max-width: 230px;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 16px 30px rgba(15, 25, 39, 0.18));
   }
   .about h2 {
     font-family: var(--display);
@@ -600,7 +623,7 @@
     transform: translateX(-50%);
     width: 800px;
     height: 440px;
-    background: radial-gradient(ellipse at center, rgba(128, 214, 181, 0.2), transparent 65%);
+    background: radial-gradient(ellipse at center, rgba(128, 185, 165, 0.2), transparent 65%);
   }
   .final-cta .wrap { position: relative; }
   .final-cta h2 {
@@ -622,7 +645,7 @@
   .final-cta .cta-btn {
     background: var(--mint);
     color: var(--navy);
-    box-shadow: 0 16px 40px -14px rgba(128, 214, 181, 0.45);
+    box-shadow: 0 16px 40px -14px rgba(128, 185, 165, 0.45);
   }
   .final-cta .cta-note { color: rgba(239, 239, 239, 0.5); }
 
@@ -762,6 +785,71 @@
   <div class="wrap">
     <p class="section-eyebrow fx">Ils témoignent</p>
     <h2 class="section-title fx">Des investisseurs qui ont arrêté de naviguer seuls</h2>
+    <div class="testi-videos">
+      <figure class="testi-video fx">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/1l0QHUwZXhMNUfB_ZcYGBOKNmqwJYqbyr/preview" aria-label="Lire le témoignage de Viviana et Maxime">
+          <img src="https://drive.google.com/thumbnail?id=1l0QHUwZXhMNUfB_ZcYGBOKNmqwJYqbyr&sz=w800" alt="Témoignage de Viviana et Maxime" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Viviana &amp; Maxime</figcaption>
+      </figure>
+      <figure class="testi-video fx fx-d1">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/14rx4w_BsM9ajCblOqj6MqCv1Z6qupd0X/preview" aria-label="Lire le témoignage de Kim">
+          <img src="https://drive.google.com/thumbnail?id=14rx4w_BsM9ajCblOqj6MqCv1Z6qupd0X&sz=w800" alt="Témoignage de Kim" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Kim</figcaption>
+      </figure>
+      <figure class="testi-video fx fx-d2">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/1Diw9ryQxEU5gkTRGDyPw29lGhdVEG1ue/preview" aria-label="Lire le témoignage de Sophie">
+          <img src="https://drive.google.com/thumbnail?id=1Diw9ryQxEU5gkTRGDyPw29lGhdVEG1ue&sz=w800" alt="Témoignage de Sophie" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Sophie</figcaption>
+      </figure>
+      <figure class="testi-video fx">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/1jSBYQmT_JOi8bbkkJsNdENv9YThSE7iP/preview" aria-label="Lire le témoignage de Lodois">
+          <img src="https://drive.google.com/thumbnail?id=1jSBYQmT_JOi8bbkkJsNdENv9YThSE7iP&sz=w800" alt="Témoignage de Lodois" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Lodois</figcaption>
+      </figure>
+      <figure class="testi-video fx fx-d1">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/17oqV5h2AdZh932JUJRny7N4ZuNoyLj8v/preview" aria-label="Lire le témoignage de Charlie">
+          <img src="https://drive.google.com/thumbnail?id=17oqV5h2AdZh932JUJRny7N4ZuNoyLj8v&sz=w800" alt="Témoignage de Charlie" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Charlie</figcaption>
+      </figure>
+      <figure class="testi-video fx fx-d2">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/1umJhfLoquWGUCBKacFqqc-Jq9Pkrif1J/preview" aria-label="Lire le témoignage de Victoria et Stacy">
+          <img src="https://drive.google.com/thumbnail?id=1umJhfLoquWGUCBKacFqqc-Jq9Pkrif1J&sz=w800" alt="Témoignage de Victoria et Stacy" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Victoria &amp; Stacy</figcaption>
+      </figure>
+      <figure class="testi-video fx">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/15PeAAvkpkXAK5W9aFKMFRD_-hfMCbpcT/preview" aria-label="Lire le témoignage de David et Marianne">
+          <img src="https://drive.google.com/thumbnail?id=15PeAAvkpkXAK5W9aFKMFRD_-hfMCbpcT&sz=w800" alt="Témoignage de David et Marianne" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>David &amp; Marianne</figcaption>
+      </figure>
+      <figure class="testi-video fx fx-d1">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/1Ubl1PKJpDr0zvvqaw1ak_x91o1h41LZH/preview" aria-label="Lire le témoignage de Ghislain">
+          <img src="https://drive.google.com/thumbnail?id=1Ubl1PKJpDr0zvvqaw1ak_x91o1h41LZH&sz=w800" alt="Témoignage de Ghislain" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Ghislain</figcaption>
+      </figure>
+      <figure class="testi-video fx fx-d2">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/11q48l1_uzczQLrEo7ltNIKwQ-SCEiLk6/preview" aria-label="Lire le témoignage de Louis">
+          <img src="https://drive.google.com/thumbnail?id=11q48l1_uzczQLrEo7ltNIKwQ-SCEiLk6&sz=w800" alt="Témoignage de Louis" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Louis</figcaption>
+      </figure>
+    </div>
     <div class="testi-grid">
       <div class="testi-card fx">
         <blockquote>Je ne cherchais pas seulement une formation elearning comme il en existe tant, je cherchais avant tout un passage à l'action. Grâce à Thomas et son équipe j'ai pu mettre en route ma stratégie d'investissement en automatique.</blockquote>
@@ -783,20 +871,96 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="testi-videos">
-      <figure class="testi-video fx">
-        <iframe loading="lazy" src="https://drive.google.com/file/d/14rx4w_BsM9ajCblOqj6MqCv1Z6qupd0X/preview" title="Témoignage vidéo de Kim" allow="autoplay; fullscreen" allowfullscreen></iframe>
-        <figcaption>Kim</figcaption>
-      </figure>
-      <figure class="testi-video fx fx-d1">
-        <iframe loading="lazy" src="https://drive.google.com/file/d/1Diw9ryQxEU5gkTRGDyPw29lGhdVEG1ue/preview" title="Témoignage vidéo de Sophie" allow="autoplay; fullscreen" allowfullscreen></iframe>
-        <figcaption>Sophie</figcaption>
-      </figure>
-      <figure class="testi-video fx fx-d2">
-        <iframe loading="lazy" src="https://drive.google.com/file/d/1jSBYQmT_JOi8bbkkJsNdENv9YThSE7iP/preview" title="Témoignage vidéo de Lodois" allow="autoplay; fullscreen" allowfullscreen></iframe>
-        <figcaption>Lodois</figcaption>
-      </figure>
+      <div class="testi-card fx fx-d2">
+        <blockquote>Une formation incontournable si tu veux investir intelligemment avec une méthodologie simple, mais redoutablement efficace. Au-delà du contenu, c'est surtout le dévouement et la passion de Thomas Mayol qui marquent la différence.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">E</div>
+          <div>
+            <div class="testi-name">Elyass</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx">
+        <blockquote>Un grand MERCI à Thomas pour cette formation ! Le contenu est très riche, détaillé et pédagogique. Cette formation m'a réellement donné confiance pour optimiser mon patrimoine. Thomas est très réactif et apporte des retours complets à nos questions.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">W</div>
+          <div>
+            <div class="testi-name">Wendy</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx fx-d1">
+        <blockquote>Cette formation est d'une richesse et d'une pertinence totale. Chaque semaine j'étais en discussion avec Thomas pour poser mes questions et affiner ma stratégie d'investissement. J'y vois maintenant clair.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">DF</div>
+          <div>
+            <div class="testi-name">Damien Fromentin</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx fx-d2">
+        <blockquote>Cette formation est une véritable mine d'or pour développer son éducation financière. Elle m'a permis d'acquérir de nombreuses connaissances en bourse, immobilier, cryptomonnaie ou encore sur la fiscalité.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">TD</div>
+          <div>
+            <div class="testi-name">Tom Da Silva</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx">
+        <blockquote>Une véritable mine d'or pour quiconque souhaite se lancer dans le monde de l'investissement ! Chaque module est structuré avec des explications pratiques et des exemples concrets qui facilitent vraiment la compréhension.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">PV</div>
+          <div>
+            <div class="testi-name">Paul Villiere</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx fx-d1">
+        <blockquote>La formation proposée par Thomas est claire, bien structurée et adaptée à tous les niveaux. Elle m'a permis de mieux comprendre les mécanismes des marchés financiers et de me sentir plus à l'aise dans mes décisions.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">SM</div>
+          <div>
+            <div class="testi-name">Stephane Metelus</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx fx-d2">
+        <blockquote>Formation très enrichissante. Tout est bien expliqué et très visuel, pas besoin d'être un expert de la finance. C'est clairement un vrai plus, tout comme la communauté qui permet d'échanger et de se faire aider.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">MG</div>
+          <div>
+            <div class="testi-name">Maxime Girouin</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx">
+        <blockquote>Quelle formation !! Bravo. Elle est complète sur plusieurs aspects : bourse, fiscalité, immobilier, cryptomonnaie. Les modules sont compréhensibles par tous.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">A</div>
+          <div>
+            <div class="testi-name">Andry</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx fx-d1">
+        <blockquote>Je suis heureux d'avoir fait cette formation, c'est une richesse énorme. Je dirais que les enseignements de Thomas sont à bien des égards inestimables.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">DT</div>
+          <div>
+            <div class="testi-name">Domineaux Telly</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
     </div>
     <p class="testi-source fx">Avis vérifiés de membres, publiés sur investisseurs30.com</p>
   </div>
@@ -829,7 +993,7 @@
 <section class="block">
   <div class="wrap-narrow">
     <div class="about fx">
-      <div class="about-photo">[ Photo de Thomas ]</div>
+      <img class="about-photo" src="assets/thomas.png" alt="Thomas Mayol, fondateur d'Investisseurs 3.0" loading="lazy">
       <div>
         <h2>Thomas Mayol</h2>
         <p class="about-role">Fondateur d'Investisseurs 3.0</p>
@@ -892,6 +1056,19 @@
       if (vslClicked) return;
       vslClicked = true;
       track('VSL_PlayClick');
+    });
+
+    // Témoignages vidéo : la miniature laisse place au lecteur Drive au clic
+    document.querySelectorAll('.tv-facade').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var f = document.createElement('iframe');
+        f.src = b.dataset.src;
+        f.allow = 'autoplay; fullscreen';
+        f.allowFullscreen = true;
+        f.title = b.getAttribute('aria-label');
+        b.parentNode.insertBefore(f, b);
+        b.remove();
+      });
     });
 
     // --- CTA après 60 s (l'iframe iClosed ne se charge qu'à ce moment-là)
