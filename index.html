@@ -24,12 +24,18 @@
 <!-- ============================================================
      META PIXEL : Investisseurs 3.0 Tunnel (686377034173439)
      Évènements envoyés par cette page :
-       - PageView            (arrivée sur la page)
-       - VSL_PlayClick       (premier clic sur le player, en pratique l'activation du son)
-       - VSL_60s             (toujours sur la page après 60 s, moment où le CTA apparaît)
-       - Page_3min           (toujours sur la page après 3 minutes)
-       - Scroll_50 / Scroll_90 (profondeur de scroll)
-       - CTA_BookingClick    (clic sur un bouton "Réserver un appel diagnostic")
+       - PageView                    (arrivée sur la page = nombre de visiteurs)
+       - VSL_PlayClick               (premier clic sur le player, en pratique l'activation du son)
+       - VSL_60s                     (toujours sur la page après 60 s, moment où le CTA apparaît)
+       - Time_30s / 1min / 2min / 3min / 5min / 10min (temps passé sur la page)
+       - Scroll_25 / 50 / 75 / 90    (profondeur de scroll)
+       - View_Proof / View_Temoignages / View_Etapes / View_Thomas / View_CTA_Final
+                                     (sections réellement vues)
+       - Testi_Video_Click + Testi_<Prénom> (clic sur un témoignage vidéo, lequel)
+       - CTA_BookingClick + CTA_Booking_Bloc60s / CTA_Booking_Final
+                                     (clic réservation, global et par emplacement)
+       - ExitIntent                  (souris qui part vers la barre du navigateur)
+       - Footer_Click                (clic sur un lien légal)
      Les stats de visionnage détaillées (plays, rétention) sont dans
      le dashboard VTurb. La réservation confirmée est envoyée par
      iClosed via l'API Conversions ("invitee_meeting_scheduled").
@@ -234,16 +240,7 @@
     0%, 100% { box-shadow: 0 0 0 0 rgba(222, 115, 98, 0.45); }
     50% { box-shadow: 0 0 0 7px rgba(222, 115, 98, 0); }
   }
-  .deadline-timer {
-    font-family: var(--display);
-    font-weight: 900;
-    font-size: 1.02rem;
-    letter-spacing: 0.04em;
-    color: #c9503d;
-    font-variant-numeric: tabular-nums;
-    min-width: 5.4em;
-    text-align: center;
-  }
+  .deadline strong { color: #c9503d; }
   .vsl-frame {
     position: relative;
     background: var(--navy);
@@ -773,10 +770,9 @@
 
 <section class="vsl-section">
   <div class="wrap">
-    <div class="deadline fx in" role="timer">
+    <div class="deadline fx in">
       <span class="deadline-dot" aria-hidden="true"></span>
-      <span>Vidéo disponible jusqu'à <strong>ce soir minuit</strong></span>
-      <span class="deadline-timer" id="deadlineTimer">--:--:--</span>
+      <span>Vidéo disponible jusqu'au <strong id="deadlineDate">demain à minuit</strong></span>
     </div>
     <div class="vsl-frame fx in fx-d3" id="vsl">
       <!-- Player VTurb : autoplay muet, overlay "activer le son" et barre
@@ -793,7 +789,7 @@
     <div class="wrap">
       <h2>Échangeons sur votre situation</h2>
       <p class="booking-sub">45 minutes en toute confidentialité avec un expert de l'équipe. Un point clair sur votre situation, votre capital et vos objectifs. Vous repartez avec une vision précise, que l'on travaille ensemble ou non.</p>
-      <a class="cta-btn track-booking" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" target="_blank" rel="noopener">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+      <a class="cta-btn track-booking" data-cta="Bloc60s" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" target="_blank" rel="noopener">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
       <p class="cta-note">Confidentiel et sans engagement</p>
       <div class="iclosed-embed">
         <!-- Chargé seulement au moment où le bloc devient visible (60 s), pour accélérer la page -->
@@ -824,7 +820,7 @@
   </div>
 </div>
 
-<div class="proof">
+<div class="proof" data-view="Proof">
   <div class="wrap proof-grid">
     <div class="proof-item fx">
       <div class="proof-num"><span class="count" data-target="600000" data-format="k">0</span></div>
@@ -841,7 +837,7 @@
   </div>
 </div>
 
-<section class="block">
+<section class="block" data-view="Temoignages">
   <div class="wrap">
     <p class="section-eyebrow fx">Ils témoignent</p>
     <h2 class="section-title fx">Des investisseurs qui ont arrêté de naviguer seuls</h2>
@@ -1030,7 +1026,7 @@
   </div>
 </section>
 
-<section class="block">
+<section class="block" data-view="Etapes">
   <div class="wrap">
     <p class="section-eyebrow fx">Notre approche</p>
     <h2 class="section-title fx">Un chemin simple, un accompagnement de bout en bout</h2>
@@ -1054,7 +1050,7 @@
   </div>
 </section>
 
-<section class="block">
+<section class="block" data-view="Thomas">
   <div class="wrap-narrow">
     <div class="about fx">
       <img class="about-photo" src="assets/thomas.png" alt="Thomas Mayol, fondateur d'Investisseurs 3.0" loading="lazy">
@@ -1069,12 +1065,12 @@
   </div>
 </section>
 
-<section class="final-cta">
+<section class="final-cta" data-view="CTA_Final">
   <div class="wrap">
     <h2 class="fx">Votre patrimoine mérite une <em>vraie stratégie</em></h2>
     <p class="fx fx-d1">45 minutes pour faire le point et voir si notre accompagnement vous correspond. Indépendants, sans produit maison ni commission cachée.</p>
     <span class="fx fx-d2" style="display:inline-block">
-      <a class="cta-btn track-booking" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" target="_blank" rel="noopener">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+      <a class="cta-btn track-booking" data-cta="Final" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" target="_blank" rel="noopener">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
     </span>
     <p class="cta-note fx fx-d3">Confidentiel et sans engagement</p>
   </div>
@@ -1125,6 +1121,9 @@
     // Témoignages vidéo : la miniature laisse place au lecteur (YouTube ou Drive) au clic
     document.querySelectorAll('.tv-facade').forEach(function (b) {
       b.addEventListener('click', function () {
+        track('Testi_Video_Click');
+        var cap = b.closest('figure').querySelector('figcaption');
+        if (cap) track('Testi_' + cap.textContent.normalize('NFD').replace(/[^a-zA-Z]+/g, '_').replace(/^_|_$/g, ''));
         var f = document.createElement('iframe');
         f.src = b.dataset.src;
         f.allow = 'autoplay; fullscreen; encrypted-media';
@@ -1135,17 +1134,13 @@
       });
     });
 
-    // --- Compte à rebours jusqu'à minuit, recalé automatiquement chaque jour
-    var timerEl = document.getElementById('deadlineTimer');
-    function pad2(n) { return n < 10 ? '0' + n : String(n); }
-    function updateDeadline() {
-      var now = new Date();
-      var end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
-      var s = Math.max(0, Math.floor((end - now) / 1000));
-      timerEl.textContent = pad2(Math.floor(s / 3600)) + ':' + pad2(Math.floor(s / 60) % 60) + ':' + pad2(s % 60);
-    }
-    updateDeadline();
-    setInterval(updateDeadline, 1000);
+    // --- Deadline : date du lendemain, recalée automatiquement chaque jour
+    var JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+    var MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    var demain = new Date();
+    demain.setDate(demain.getDate() + 1);
+    document.getElementById('deadlineDate').textContent =
+      JOURS[demain.getDay()] + ' ' + demain.getDate() + ' ' + MOIS[demain.getMonth()] + ' à minuit';
 
     // --- CTA après 60 s (l'iframe iClosed ne se charge qu'à ce moment-là)
     function revealCta() {
@@ -1169,16 +1164,45 @@
       }, DELAY_MS);
     }
 
-    // --- Toujours sur la page après 3 minutes
-    setTimeout(function () { track('Page_3min'); }, 3 * 60 * 1000);
+    // --- Temps passé sur la page, par paliers
+    [[30, 'Time_30s'], [60, 'Time_1min'], [120, 'Time_2min'], [180, 'Time_3min'],
+     [300, 'Time_5min'], [600, 'Time_10min']].forEach(function (b) {
+      setTimeout(function () { track(b[1]); }, b[0] * 1000);
+    });
 
     // --- Profondeur de scroll
-    var s50 = false, s90 = false;
+    var scrollFired = {};
     window.addEventListener('scroll', function () {
-      var p = (window.scrollY + window.innerHeight) / document.body.scrollHeight;
-      if (!s50 && p >= 0.5) { s50 = true; track('Scroll_50'); }
-      if (!s90 && p >= 0.9) { s90 = true; track('Scroll_90'); }
+      var p = (window.scrollY + window.innerHeight) / document.body.scrollHeight * 100;
+      [25, 50, 75, 90].forEach(function (m) {
+        if (!scrollFired[m] && p >= m) { scrollFired[m] = true; track('Scroll_' + m); }
+      });
     }, { passive: true });
+
+    // --- Sections vues (une fois chacune)
+    var viewIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          track('View_' + e.target.dataset.view);
+          viewIo.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    document.querySelectorAll('[data-view]').forEach(function (el) { viewIo.observe(el); });
+
+    // --- Intention de sortie (souris vers le haut de la fenêtre, une fois)
+    var exitFired = false;
+    document.addEventListener('mouseout', function (e) {
+      if (!exitFired && !e.relatedTarget && e.clientY < 10) {
+        exitFired = true;
+        track('ExitIntent');
+      }
+    });
+
+    // --- Clics sur les liens du footer
+    document.querySelectorAll('.footer-links a').forEach(function (a) {
+      a.addEventListener('click', function () { track('Footer_Click'); });
+    });
 
     // --- Transmission des UTM (et autres paramètres d'URL) à iClosed,
     //     pour savoir quelle pub a généré chaque réservation.
@@ -1191,10 +1215,11 @@
       });
     }
 
-    // --- Clics sur les boutons de réservation
+    // --- Clics sur les boutons de réservation (global + par emplacement)
     document.querySelectorAll('.track-booking').forEach(function (btn) {
       btn.addEventListener('click', function () {
         track('CTA_BookingClick');
+        if (btn.dataset.cta) track('CTA_Booking_' + btn.dataset.cta);
       });
     });
 
