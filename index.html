@@ -4,8 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<meta name="description" content="Une stratégie d'investissement construite avec vous, pour votre patrimoine. Réservez un appel diagnostic confidentiel avec l'équipe de Thomas Mayol.">
-<!-- VTurb : speed code (chargement plus rapide du player) -->
+<!-- VTurb : speed code -->
 <script>!function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);</script>
 <link rel="preload" href="https://scripts.converteai.net/44ddd425-da4a-4a06-a6b4-1ae5a46727c5/players/6a7ed4ea324bb568d0591b93/v4/player.js" as="script">
 <link rel="preload" href="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js" as="script">
@@ -16,9 +15,6 @@
 <link rel="dns-prefetch" href="https://license.vturb.com">
 <link rel="preconnect" href="https://connect.facebook.net">
 <link rel="preconnect" href="https://app.iclosed.io">
-<link rel="dns-prefetch" href="https://www.facebook.com">
-<link rel="dns-prefetch" href="https://drive.google.com">
-<link rel="dns-prefetch" href="https://www.youtube-nocookie.com">
 <title>Investisseurs 3.0 | Votre stratégie d'investissement sur mesure</title>
 
 <!-- ============================================================
@@ -168,13 +164,13 @@
     padding: 8px 18px;
     margin-bottom: 26px;
   }
-  /* Sélecteur renforcé : sur WordPress, les styles du thème Elementor
-     (.elementor-kit h1) écrasent un simple sélecteur h1 */
+  /* !important nécessaire : sur WordPress, le thème Elementor charge ses
+     styles de titres après les nôtres avec une spécificité supérieure */
   .hero h1 {
-    font-family: var(--display);
-    font-weight: 900;
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    line-height: 1.13;
+    font-family: var(--display) !important;
+    font-weight: 900 !important;
+    font-size: clamp(2rem, 5vw, 3.2rem) !important;
+    line-height: 1.13 !important;
     letter-spacing: -0.022em;
     text-wrap: balance;
     max-width: 820px;
@@ -751,7 +747,7 @@
     .signature { text-align: left; }
     .header-badge { display: none; }
     .hero { padding: 44px 0 4px; }
-    .hero h1 { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+    .hero h1 { font-size: clamp(1.8rem, 8vw, 2.5rem) !important; }
     .deadline { font-size: 0.82rem; padding: 9px 16px; text-align: left; }
   }
 </style>

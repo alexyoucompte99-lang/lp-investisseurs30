@@ -156,13 +156,13 @@
     padding: 8px 18px;
     margin-bottom: 26px;
   }
-  /* Sélecteur renforcé : sur WordPress, les styles du thème Elementor
-     (.elementor-kit h1) écrasent un simple sélecteur h1 */
+  /* !important nécessaire : sur WordPress, le thème Elementor charge ses
+     styles de titres après les nôtres avec une spécificité supérieure */
   .hero h1 {
-    font-family: var(--display);
-    font-weight: 900;
-    font-size: clamp(2rem, 5vw, 3.2rem);
-    line-height: 1.13;
+    font-family: var(--display) !important;
+    font-weight: 900 !important;
+    font-size: clamp(2rem, 5vw, 3.2rem) !important;
+    line-height: 1.13 !important;
     letter-spacing: -0.022em;
     text-wrap: balance;
     max-width: 820px;
@@ -739,7 +739,7 @@
     .signature { text-align: left; }
     .header-badge { display: none; }
     .hero { padding: 44px 0 4px; }
-    .hero h1 { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+    .hero h1 { font-size: clamp(1.8rem, 8vw, 2.5rem) !important; }
     .deadline { font-size: 0.82rem; padding: 9px 16px; text-align: left; }
   }
 </style>
