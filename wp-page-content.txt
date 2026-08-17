@@ -1,0 +1,1260 @@
+<!-- wp:html -->
+<!-- Page "Stratégie Privée" : contenu complet de la LP, à coller dans
+     l'éditeur de code WordPress. Modèle de page : Elementor Canvas. -->
+<!-- VTurb : speed code (chargement plus rapide du player) -->
+<script>!function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);</script>
+<link rel="preload" href="https://scripts.converteai.net/44ddd425-da4a-4a06-a6b4-1ae5a46727c5/players/6a7ed4ea324bb568d0591b93/v4/player.js" as="script">
+<link rel="preload" href="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js" as="script">
+<link rel="preload" href="https://cdn.converteai.net/44ddd425-da4a-4a06-a6b4-1ae5a46727c5/6a7ed4640701fa6d6b9daba2/main.m3u8" as="fetch">
+<link rel="dns-prefetch" href="https://cdn.converteai.net">
+<link rel="dns-prefetch" href="https://scripts.converteai.net">
+<link rel="dns-prefetch" href="https://license.vturb.com">
+
+<!-- ============================================================
+     META PIXEL : Investisseurs 3.0 Tunnel (686377034173439)
+     Évènements envoyés par cette page :
+       - PageView                    (arrivée sur la page = nombre de visiteurs)
+       - VSL_PlayClick               (premier clic sur le player, en pratique l'activation du son)
+       - VSL_60s                     (toujours sur la page après 60 s, moment où le CTA apparaît)
+       - Time_30s / 1min / 2min / 3min / 5min / 10min (temps passé sur la page)
+       - Scroll_25 / 50 / 75 / 90    (profondeur de scroll)
+       - View_Proof / View_Temoignages / View_Etapes / View_Thomas / View_CTA_Final
+                                     (sections réellement vues)
+       - Testi_Video_Click + Testi_<Prénom> (clic sur un témoignage vidéo, lequel)
+       - CTA_BookingClick + CTA_Booking_Bloc60s / CTA_Booking_Final
+                                     (clic réservation, global et par emplacement)
+       - ExitIntent                  (souris qui part vers la barre du navigateur)
+       - Footer_Click                (clic sur un lien légal)
+     Les stats de visionnage détaillées (plays, rétention) sont dans
+     le dashboard VTurb. La réservation confirmée est envoyée par
+     iClosed via l'API Conversions ("invitee_meeting_scheduled").
+     Les paramètres UTM de l'URL sont transmis à iClosed automatiquement.
+     ============================================================ -->
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '686377034173439');
+  /* Pas de PageView ici : PixelYourSite l'envoie déjà sur tout
+     thomas-mayol.com avec le même pixel, on évite le double comptage. */
+</script>
+
+<style>
+  :root {
+    --white: #ffffff;
+    --surface: #f6f8f8;
+    --navy: #0f1927;
+    --navy-soft: #5a6674;
+    /* Palette Valar : vert sauge désaturé, code visuel gestion privée */
+    --mint: #80b9a5;
+    --mint-deep: #52836f;
+    --mint-wash: rgba(128, 185, 165, 0.16);
+    --line: rgba(15, 25, 39, 0.09);
+    --display: "Satoshi", "Montserrat", -apple-system, "Segoe UI", sans-serif;
+    --body: "Montserrat", -apple-system, "Segoe UI", sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--white);
+    color: var(--navy);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+  .wrap-narrow { max-width: 740px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Scroll reveals ---------- */
+  .fx {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fx.in { opacity: 1; transform: none; }
+  .fx-d1 { transition-delay: 0.1s; }
+  .fx-d2 { transition-delay: 0.2s; }
+  .fx-d3 { transition-delay: 0.3s; }
+
+  /* ---------- Header ---------- */
+  header { padding: 26px 0; position: relative; z-index: 2; }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .logo {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 1.2rem;
+    letter-spacing: -0.01em;
+  }
+  .logo span { color: var(--mint-deep); }
+  .header-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--navy-soft);
+    white-space: nowrap;
+  }
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--mint-deep);
+    animation: pulse-dot 2s ease infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(82, 131, 111, 0.4); }
+    50% { box-shadow: 0 0 0 6px rgba(82, 131, 111, 0); }
+  }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    position: relative;
+    padding: 68px 0 4px;
+    text-align: center;
+  }
+  .hero-glow {
+    position: absolute;
+    top: -180px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 520px;
+    background: radial-gradient(ellipse at center, var(--mint-wash), transparent 65%);
+    pointer-events: none;
+  }
+  .hero > .wrap { position: relative; }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--mint-deep);
+    background: var(--white);
+    border: 1px solid rgba(82, 131, 111, 0.25);
+    border-radius: 100px;
+    padding: 8px 18px;
+    margin-bottom: 26px;
+  }
+  /* Sélecteur renforcé : sur WordPress, les styles du thème Elementor
+     (.elementor-kit h1) écrasent un simple sélecteur h1 */
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.13;
+    letter-spacing: -0.022em;
+    text-wrap: balance;
+    max-width: 820px;
+    margin: 0 auto 22px;
+  }
+  .hl {
+    position: relative;
+    white-space: nowrap;
+  }
+  .hl svg {
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 100%;
+    height: 12px;
+    overflow: visible;
+  }
+  .hl svg path {
+    fill: none;
+    stroke: var(--mint);
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-dasharray: 320;
+    stroke-dashoffset: 320;
+    animation: draw 1s ease 0.7s forwards;
+  }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.12rem);
+    color: var(--navy-soft);
+    max-width: 600px;
+    margin: 0 auto;
+    text-wrap: balance;
+  }
+
+  /* ---------- VSL ---------- */
+  .vsl-section { padding: 6px 0 24px; position: relative; }
+
+  /* Bandeau d'urgence : deadline evergreen recalée sur minuit chaque jour */
+  .deadline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: nowrap;
+    width: fit-content;
+    max-width: 100%;
+    margin: 0 auto 22px;
+    background: var(--white);
+    border: 1px solid rgba(222, 115, 98, 0.35);
+    border-radius: 100px;
+    padding: 10px 22px;
+    font-size: 0.9rem;
+    color: var(--navy);
+    box-shadow: 0 10px 30px -18px rgba(15, 25, 39, 0.3);
+  }
+  .deadline strong { font-weight: 700; }
+  .deadline-dot {
+    flex-shrink: 0;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #de7362;
+    animation: deadline-pulse 1.6s ease infinite;
+  }
+  @keyframes deadline-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(222, 115, 98, 0.45); }
+    50% { box-shadow: 0 0 0 7px rgba(222, 115, 98, 0); }
+  }
+  .deadline strong { color: #c9503d; }
+  .vsl-frame {
+    position: relative;
+    background: var(--navy);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow:
+      0 30px 70px -28px rgba(15, 25, 39, 0.45),
+      0 0 0 6px rgba(128, 185, 165, 0.12);
+  }
+  .vsl-hint {
+    text-align: center;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--navy-soft);
+    margin-top: 18px;
+  }
+
+  /* ---------- Reveal (CTA iClosed) ---------- */
+  .reveal {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 1.2s ease, opacity 1s ease 0.3s;
+  }
+  .reveal.visible { max-height: 1500px; opacity: 1; }
+  .booking { padding: 56px 0 8px; text-align: center; }
+  .booking h2 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    text-wrap: balance;
+    margin-bottom: 14px;
+  }
+  .booking-sub {
+    color: var(--navy-soft);
+    max-width: 540px;
+    margin: 0 auto 30px;
+  }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--white);
+    background: var(--navy);
+    border-radius: 10px;
+    padding: 17px 36px;
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    box-shadow: 0 14px 34px -14px rgba(15, 25, 39, 0.5);
+  }
+  .cta-btn .arrow { transition: transform 0.18s ease; display: inline-flex; }
+  .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 44px -14px rgba(15, 25, 39, 0.55);
+  }
+  .cta-btn:hover .arrow { transform: translateX(4px); }
+  .cta-note { margin-top: 14px; font-size: 0.8rem; color: var(--navy-soft); }
+  .iclosed-embed {
+    margin: 36px auto 0;
+    max-width: 780px;
+    height: 640px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--surface);
+  }
+  .iclosed-embed iframe { width: 100%; height: 100%; border: 0; }
+
+  /* ---------- Marquee ---------- */
+  .marquee {
+    margin-top: 72px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+    padding: 18px 0;
+    background: var(--surface);
+  }
+  .marquee-track {
+    display: flex;
+    gap: 48px;
+    width: max-content;
+    animation: scroll-x 28s linear infinite;
+  }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes scroll-x {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .marquee-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 48px;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--navy-soft);
+    white-space: nowrap;
+  }
+  .marquee-item::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--mint);
+  }
+
+  /* ---------- Proof ---------- */
+  .proof { padding: 72px 0 0; }
+  .proof-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .proof-item {
+    text-align: center;
+    padding: 40px 20px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .proof-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 44px -22px rgba(15, 25, 39, 0.25);
+  }
+  .proof-num {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(1.8rem, 3.8vw, 2.6rem);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .proof-num em { font-style: normal; color: var(--mint-deep); }
+  .proof-label {
+    margin-top: 6px;
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--navy-soft);
+  }
+
+  /* ---------- Sections ---------- */
+  section.block { padding: 88px 0 0; }
+  .section-eyebrow {
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mint-deep);
+    margin-bottom: 14px;
+  }
+  .section-title {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    text-align: center;
+    text-wrap: balance;
+    max-width: 640px;
+    margin: 0 auto 48px;
+  }
+
+  /* ---------- Testimonials ---------- */
+  .testi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 24px;
+  }
+  .testi-shorts {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+  /* .testi-video.short bat .testi-video iframe (spécificité), sinon le
+     player vertical injecté au clic repasse en 16:9 et s'affiche minuscule */
+  .testi-video.short .tv-facade,
+  .testi-video.short iframe {
+    aspect-ratio: 9 / 16;
+    height: auto;
+  }
+  .testi-videos {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+  }
+  .testi-video {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: var(--navy);
+  }
+  .testi-video iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+  }
+  .tv-facade {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    background: var(--navy);
+    overflow: hidden;
+  }
+  .tv-facade img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .tv-play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(15, 25, 39, 0.4);
+    transition: transform 0.2s ease;
+  }
+  .tv-play svg { margin-left: 3px; }
+  .tv-facade:hover .tv-play { transform: translate(-50%, -50%) scale(1.1); }
+  .testi-video figcaption {
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 0.85rem;
+    color: var(--navy);
+    text-align: center;
+    padding: 10px 14px;
+  }
+  .testi-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 34px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .testi-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 24px 50px -24px rgba(15, 25, 39, 0.28);
+  }
+  .testi-card::before {
+    content: "“";
+    position: absolute;
+    top: 8px;
+    left: 22px;
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 3.4rem;
+    line-height: 1;
+    color: var(--mint);
+  }
+  .testi-card blockquote {
+    font-size: 0.94rem;
+    line-height: 1.65;
+    flex: 1;
+    padding-top: 18px;
+  }
+  .testi-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-top: 1px solid var(--line);
+    padding-top: 18px;
+  }
+  .testi-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 1px solid rgba(82, 131, 111, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 0.85rem;
+    color: var(--mint-deep);
+  }
+  .testi-name { font-weight: 600; font-size: 0.88rem; }
+  .testi-role { font-size: 0.76rem; color: var(--navy-soft); }
+  .testi-source {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 0.78rem;
+    color: var(--navy-soft);
+  }
+
+  /* ---------- Process ---------- */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    counter-reset: step;
+  }
+  .step {
+    position: relative;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 32px 28px;
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .step:hover {
+    transform: translateY(-4px);
+    border-color: rgba(82, 131, 111, 0.4);
+    box-shadow: 0 20px 44px -22px rgba(15, 25, 39, 0.22);
+  }
+  .step::after {
+    counter-increment: step;
+    content: "0" counter(step);
+    position: absolute;
+    right: 16px;
+    top: 6px;
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 3.2rem;
+    line-height: 1;
+    color: var(--mint-wash);
+  }
+  .step-tag {
+    display: inline-block;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--mint-deep);
+    background: var(--mint-wash);
+    border-radius: 100px;
+    padding: 5px 12px;
+    margin-bottom: 16px;
+  }
+  .step h3 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 1.1rem;
+    letter-spacing: -0.01em;
+    margin-bottom: 10px;
+  }
+  .step p { font-size: 0.92rem; color: var(--navy-soft); }
+
+  /* ---------- Thomas ---------- */
+  .about {
+    display: grid;
+    grid-template-columns: 210px 1fr;
+    gap: 44px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 44px;
+  }
+  .about-photo {
+    width: 100%;
+    max-width: 230px;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 16px 30px rgba(15, 25, 39, 0.18));
+  }
+  .about h2 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 1.5rem;
+    letter-spacing: -0.015em;
+    margin-bottom: 4px;
+  }
+  .about-role {
+    font-size: 0.76rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mint-deep);
+    margin-bottom: 18px;
+  }
+  .about p { color: var(--navy-soft); font-size: 0.95rem; }
+  .about p + p { margin-top: 12px; }
+  .signature {
+    margin-top: 22px;
+    padding-left: 18px;
+    border-left: 3px solid var(--mint);
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: 1.02rem;
+    color: var(--navy);
+    line-height: 1.45;
+  }
+
+  /* ---------- Final CTA ---------- */
+  .final-cta {
+    position: relative;
+    text-align: center;
+    padding: 96px 0;
+    margin-top: 88px;
+    background: var(--navy);
+    color: var(--white);
+    overflow: hidden;
+  }
+  .final-cta::before {
+    content: "";
+    position: absolute;
+    bottom: -220px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 440px;
+    background: radial-gradient(ellipse at center, rgba(128, 185, 165, 0.2), transparent 65%);
+  }
+  .final-cta .wrap { position: relative; }
+  .final-cta h2 {
+    font-family: var(--display);
+    font-weight: 900;
+    font-size: clamp(1.6rem, 3.6vw, 2.3rem);
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    text-wrap: balance;
+    max-width: 620px;
+    margin: 0 auto 16px;
+  }
+  .final-cta h2 em { font-style: normal; color: var(--mint); }
+  .final-cta p {
+    color: rgba(239, 239, 239, 0.65);
+    max-width: 500px;
+    margin: 0 auto 32px;
+  }
+  .final-cta .cta-btn {
+    background: var(--mint);
+    color: var(--navy);
+    box-shadow: 0 16px 40px -14px rgba(128, 185, 165, 0.45);
+  }
+  .final-cta .cta-note { color: rgba(239, 239, 239, 0.5); }
+
+  /* ---------- Footer ---------- */
+  footer {
+    background: var(--navy);
+    border-top: 1px solid rgba(239, 239, 239, 0.1);
+    padding: 32px 0 44px;
+    text-align: center;
+  }
+  .footer-links {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .footer-links a {
+    color: rgba(239, 239, 239, 0.55);
+    text-decoration: none;
+    font-size: 0.8rem;
+  }
+  .footer-links a:hover { color: var(--mint); }
+  .footer-legal {
+    font-size: 0.73rem;
+    color: rgba(239, 239, 239, 0.35);
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  a:focus-visible {
+    outline: 2px solid var(--mint-deep);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { transition: none !important; animation: none !important; }
+    .fx { opacity: 1; transform: none; }
+    .hl svg path { stroke-dashoffset: 0; }
+  }
+
+  @media (max-width: 820px) {
+    .testi-grid, .testi-videos, .steps, .proof-grid { grid-template-columns: 1fr; }
+    .testi-shorts { grid-template-columns: repeat(2, 1fr); }
+    .about { grid-template-columns: 1fr; text-align: center; }
+    .about-photo { margin: 0 auto; }
+    .signature { text-align: left; }
+    .header-badge { display: none; }
+    .hero { padding: 44px 0 4px; }
+    .hero h1 { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+    .deadline { font-size: 0.82rem; padding: 9px 16px; text-align: left; }
+  }
+</style>
+
+<header>
+  <div class="wrap header-inner">
+    <div class="logo">Investisseurs <span>3.0</span></div>
+    <div class="header-badge"><span class="live-dot"></span> 4,9/5 sur Trustpilot · 600 000 abonnés</div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="wrap">
+    <p class="eyebrow fx in">Accompagnement patrimonial privé</p>
+    <h1 class="fx in fx-d1">Une stratégie d'investissement construite <span class="hl">avec vous<svg viewBox="0 0 200 12" preserveAspectRatio="none"><path d="M3 6 L197 6"/></svg></span>, pour votre patrimoine.</h1>
+    <p class="hero-sub fx in fx-d2">Découvrez notre approche dans cette vidéo, puis réservez un échange confidentiel avec l'un des experts de l'équipe de Thomas Mayol.</p>
+  </div>
+</section>
+
+<section class="vsl-section">
+  <div class="wrap">
+    <div class="deadline fx in">
+      <span class="deadline-dot" aria-hidden="true"></span>
+      <span>Vidéo disponible jusqu'au <strong id="deadlineDate">demain à minuit</strong></span>
+    </div>
+    <div class="vsl-frame fx in fx-d3" id="vsl">
+      <!-- Player VTurb : autoplay muet, overlay "activer le son" et barre
+           de progression intelligente gérés nativement par VTurb -->
+      <vturb-smartplayer id="vid-6a7ed4ea324bb568d0591b93" style="display: block; margin: 0 auto; width: 100%;"><div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 56.25% 0 0; z-index: 0; background-color: #0f1927;"></div></vturb-smartplayer>
+    </div>
+    <p class="vsl-hint">Pensez à activer le son</p>
+  </div>
+</section>
+
+<!-- CTA + iClosed : se révèle après 60 secondes -->
+<div class="reveal" id="reveal">
+  <section class="booking" id="reserver">
+    <div class="wrap">
+      <h2>Échangeons sur votre situation</h2>
+      <p class="booking-sub">45 minutes en toute confidentialité avec un expert de l'équipe. Un point clair sur votre situation, votre capital et vos objectifs. Vous repartez avec une vision précise, que l'on travaille ensemble ou non.</p>
+      <a class="cta-btn track-booking" data-cta="Bloc60s" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" target="_blank" rel="noopener">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+      <p class="cta-note">Confidentiel et sans engagement</p>
+      <div class="iclosed-embed">
+        <!-- Chargé seulement au moment où le bloc devient visible (60 s), pour accélérer la page -->
+        <iframe data-src="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" title="Réserver un appel diagnostic"></iframe>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="marquee-item">Bourse</span>
+    <span class="marquee-item">Immobilier</span>
+    <span class="marquee-item">Private Equity</span>
+    <span class="marquee-item">Optimisation fiscale</span>
+    <span class="marquee-item">Transmission</span>
+    <span class="marquee-item">Holding &amp; montages de sociétés</span>
+    <span class="marquee-item">Stratégie patrimoniale</span>
+    <span class="marquee-item">Indépendance financière</span>
+    <span class="marquee-item">Bourse</span>
+    <span class="marquee-item">Immobilier</span>
+    <span class="marquee-item">Private Equity</span>
+    <span class="marquee-item">Optimisation fiscale</span>
+    <span class="marquee-item">Transmission</span>
+    <span class="marquee-item">Holding &amp; montages de sociétés</span>
+    <span class="marquee-item">Stratégie patrimoniale</span>
+    <span class="marquee-item">Indépendance financière</span>
+  </div>
+</div>
+
+<div class="proof" data-view="Proof">
+  <div class="wrap proof-grid">
+    <div class="proof-item fx">
+      <div class="proof-num"><span class="count" data-target="600000" data-format="k">0</span></div>
+      <div class="proof-label">Abonnés</div>
+    </div>
+    <div class="proof-item fx fx-d1">
+      <div class="proof-num"><em>+</em><span class="count" data-target="700" data-format="space">0</span></div>
+      <div class="proof-label">Investisseurs accompagnés</div>
+    </div>
+    <div class="proof-item fx fx-d2">
+      <div class="proof-num"><span class="count" data-target="49" data-format="rating">0</span></div>
+      <div class="proof-label">Sur Trustpilot</div>
+    </div>
+  </div>
+</div>
+
+<section class="block" data-view="Temoignages">
+  <div class="wrap">
+    <p class="section-eyebrow fx">Ils témoignent</p>
+    <h2 class="section-title fx">Des investisseurs qui ont arrêté de naviguer seuls</h2>
+    <!-- Témoignages verticaux (YouTube Shorts, les mêmes que le site) -->
+    <div class="testi-shorts">
+      <figure class="testi-video short fx">
+        <button class="tv-facade" data-src="https://www.youtube-nocookie.com/embed/zjH4DKU5YGw?autoplay=1&amp;playsinline=1&amp;rel=0" aria-label="Lire le témoignage de Kim">
+          <img src="https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/yt-kim.jpg" alt="Témoignage de Kim" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Kim</figcaption>
+      </figure>
+      <figure class="testi-video short fx fx-d1">
+        <button class="tv-facade" data-src="https://www.youtube-nocookie.com/embed/TVe209yxDPY?autoplay=1&amp;playsinline=1&amp;rel=0" aria-label="Lire le témoignage de Sophie">
+          <img src="https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/yt-sophie.jpg" alt="Témoignage de Sophie" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Sophie</figcaption>
+      </figure>
+      <figure class="testi-video short fx fx-d2">
+        <button class="tv-facade" data-src="https://www.youtube-nocookie.com/embed/mfhdvZio1Ck?autoplay=1&amp;playsinline=1&amp;rel=0" aria-label="Lire le témoignage de Lodois">
+          <img src="https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/yt-lodois.jpg" alt="Témoignage de Lodois" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Lodois</figcaption>
+      </figure>
+      <figure class="testi-video short fx fx-d3">
+        <button class="tv-facade" data-src="https://www.youtube-nocookie.com/embed/snR--n7k_Gw?autoplay=1&amp;playsinline=1&amp;rel=0" aria-label="Lire le témoignage de Charlie">
+          <img src="https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/yt-charlie.jpg" alt="Témoignage de Charlie" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Charlie</figcaption>
+      </figure>
+      <figure class="testi-video short fx fx-d3">
+        <button class="tv-facade" data-src="https://www.youtube-nocookie.com/embed/hnEXr25er_I?autoplay=1&amp;playsinline=1&amp;rel=0" aria-label="Lire le témoignage de Victoria et Stacy">
+          <img src="https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/yt-victoria-stacy.jpg" alt="Témoignage de Victoria et Stacy" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Victoria &amp; Stacy</figcaption>
+      </figure>
+    </div>
+    <!-- Interviews (Drive), vignettes extraites des vidéos -->
+    <div class="testi-videos">
+      <figure class="testi-video fx">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/1l0QHUwZXhMNUfB_ZcYGBOKNmqwJYqbyr/preview" aria-label="Lire le témoignage de Viviana et Maxime">
+          <img src="https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/itw-viviana-maxime.jpg" alt="Témoignage de Viviana et Maxime" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Viviana &amp; Maxime</figcaption>
+      </figure>
+      <figure class="testi-video fx fx-d1">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/15PeAAvkpkXAK5W9aFKMFRD_-hfMCbpcT/preview" aria-label="Lire le témoignage de David et Marianne">
+          <img src="https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/itw-david-marianne.jpg" alt="Témoignage de David et Marianne" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>David &amp; Marianne</figcaption>
+      </figure>
+      <figure class="testi-video fx fx-d2">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/1Ubl1PKJpDr0zvvqaw1ak_x91o1h41LZH/preview" aria-label="Lire le témoignage de Ghislain">
+          <img src="https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/itw-ghislain.jpg" alt="Témoignage de Ghislain" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Ghislain</figcaption>
+      </figure>
+      <figure class="testi-video fx fx-d3">
+        <button class="tv-facade" data-src="https://drive.google.com/file/d/11q48l1_uzczQLrEo7ltNIKwQ-SCEiLk6/preview" aria-label="Lire le témoignage de Louis">
+          <img src="https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/itw-louis.jpg" alt="Témoignage de Louis" loading="lazy">
+          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <figcaption>Louis</figcaption>
+      </figure>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card fx">
+        <blockquote>Je ne cherchais pas seulement une formation elearning comme il en existe tant, je cherchais avant tout un passage à l'action. Grâce à Thomas et son équipe j'ai pu mettre en route ma stratégie d'investissement en automatique.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">F</div>
+          <div>
+            <div class="testi-name">Fabien</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx fx-d1">
+        <blockquote>Cette formation se décline avec une vraie logique allant du plus général jusqu'au détail qui est notre portefeuille d'investissement. L'accompagnement est réel, et Thomas nous fait de vrais analyses et retours personnalisés.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">JN</div>
+          <div>
+            <div class="testi-name">Joan Negoce</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx fx-d2">
+        <blockquote>Une formation incontournable si tu veux investir intelligemment avec une méthodologie simple, mais redoutablement efficace. Au-delà du contenu, c'est surtout le dévouement et la passion de Thomas Mayol qui marquent la différence.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">E</div>
+          <div>
+            <div class="testi-name">Elyass</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx">
+        <blockquote>Un grand MERCI à Thomas pour cette formation ! Le contenu est très riche, détaillé et pédagogique. Cette formation m'a réellement donné confiance pour optimiser mon patrimoine. Thomas est très réactif et apporte des retours complets à nos questions.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">W</div>
+          <div>
+            <div class="testi-name">Wendy</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx fx-d1">
+        <blockquote>Cette formation est d'une richesse et d'une pertinence totale. Chaque semaine j'étais en discussion avec Thomas pour poser mes questions et affiner ma stratégie d'investissement. J'y vois maintenant clair.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">DF</div>
+          <div>
+            <div class="testi-name">Damien Fromentin</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx fx-d2">
+        <blockquote>Cette formation est une véritable mine d'or pour développer son éducation financière. Elle m'a permis d'acquérir de nombreuses connaissances en bourse, immobilier, cryptomonnaie ou encore sur la fiscalité.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">TD</div>
+          <div>
+            <div class="testi-name">Tom Da Silva</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx">
+        <blockquote>Une véritable mine d'or pour quiconque souhaite se lancer dans le monde de l'investissement ! Chaque module est structuré avec des explications pratiques et des exemples concrets qui facilitent vraiment la compréhension.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">PV</div>
+          <div>
+            <div class="testi-name">Paul Villiere</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx fx-d1">
+        <blockquote>La formation proposée par Thomas est claire, bien structurée et adaptée à tous les niveaux. Elle m'a permis de mieux comprendre les mécanismes des marchés financiers et de me sentir plus à l'aise dans mes décisions.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">SM</div>
+          <div>
+            <div class="testi-name">Stephane Metelus</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx fx-d2">
+        <blockquote>Formation très enrichissante. Tout est bien expliqué et très visuel, pas besoin d'être un expert de la finance. C'est clairement un vrai plus, tout comme la communauté qui permet d'échanger et de se faire aider.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">MG</div>
+          <div>
+            <div class="testi-name">Maxime Girouin</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx">
+        <blockquote>Quelle formation !! Bravo. Elle est complète sur plusieurs aspects : bourse, fiscalité, immobilier, cryptomonnaie. Les modules sont compréhensibles par tous.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">A</div>
+          <div>
+            <div class="testi-name">Andry</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card fx fx-d1">
+        <blockquote>Je suis heureux d'avoir fait cette formation, c'est une richesse énorme. Je dirais que les enseignements de Thomas sont à bien des égards inestimables.</blockquote>
+        <div class="testi-author">
+          <div class="testi-avatar">DT</div>
+          <div>
+            <div class="testi-name">Domineaux Telly</div>
+            <div class="testi-role">Membre Investisseurs 3.0 · Avis vérifié</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="testi-source fx">Avis vérifiés de membres, publiés sur investisseurs30.com</p>
+  </div>
+</section>
+
+<section class="block" data-view="Etapes">
+  <div class="wrap">
+    <p class="section-eyebrow fx">Notre approche</p>
+    <h2 class="section-title fx">Un chemin simple, un accompagnement de bout en bout</h2>
+    <div class="steps">
+      <div class="step fx">
+        <span class="step-tag">Diagnostic</span>
+        <h3>L'appel diagnostic</h3>
+        <p>45 minutes en toute confidentialité. Un point sur votre situation, votre capital disponible et vos objectifs. Un diagnostic honnête, rien à vous vendre.</p>
+      </div>
+      <div class="step fx fx-d1">
+        <span class="step-tag">Stratégie</span>
+        <h3>Votre stratégie sur mesure</h3>
+        <p>Une allocation construite pour vous : bourse, immobilier, private equity, optimisation fiscale. Adaptée à votre profil de risque et à votre horizon.</p>
+      </div>
+      <div class="step fx fx-d2">
+        <span class="step-tag">Déploiement</span>
+        <h3>On déploie ensemble</h3>
+        <p>Vous passez à l'action accompagné par nos experts, pas à pas. Chaque décision est validée à deux. Vous n'êtes plus seul face à vos choix.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" data-view="Thomas">
+  <div class="wrap-narrow">
+    <div class="about fx">
+      <img class="about-photo" src="https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/thomas.png" alt="Thomas Mayol, fondateur d'Investisseurs 3.0" loading="lazy">
+      <div>
+        <h2>Thomas Mayol</h2>
+        <p class="about-role">Fondateur d'Investisseurs 3.0</p>
+        <p>Suivi par plus de 600 000 personnes, Thomas a bâti Investisseurs 3.0 sur une conviction simple : la culture financière ne doit pas être réservée à une élite, et le conseil ne doit jamais être dicté par des commissions.</p>
+        <p>Avec son équipe d'experts, il accompagne aujourd'hui plus de 700 investisseurs dans la structuration de leur patrimoine.</p>
+        <div class="signature">« Investir, ce n'est pas prédire. C'est structurer. »</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta" data-view="CTA_Final">
+  <div class="wrap">
+    <h2 class="fx">Votre patrimoine mérite une <em>vraie stratégie</em></h2>
+    <p class="fx fx-d1">45 minutes pour faire le point et voir si notre accompagnement vous correspond. Indépendants, sans produit maison ni commission cachée.</p>
+    <span class="fx fx-d2" style="display:inline-block">
+      <a class="cta-btn track-booking" data-cta="Final" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" target="_blank" rel="noopener">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+    </span>
+    <p class="cta-note fx fx-d3">Confidentiel et sans engagement</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-links">
+      <a href="https://investisseurs30.com/mentions-legales/" target="_blank" rel="noopener">Mentions légales</a>
+      <a href="https://investisseurs30.com/politique-de-confidentialite/" target="_blank" rel="noopener">Politique de confidentialité</a>
+    </div>
+    <p class="footer-legal">Investisseurs 3.0. Les informations présentées ne constituent pas un conseil en investissement personnalisé. Investir comporte des risques de perte en capital. Les performances passées ne préjugent pas des performances futures.</p>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var DELAY_MS = 60 * 1000; // CTA révélé après 1 minute
+
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Envoi d'un évènement au Pixel Meta (sans erreur si le pixel est bloqué)
+    function track(eventName) {
+      if (typeof window.fbq === 'function') {
+        window.fbq('trackCustom', eventName);
+      }
+    }
+
+    // ============================================================
+    // VSL : player VTurb. L'autoplay muet, l'overlay "activer le son"
+    // et la barre de progression sont gérés par VTurb, et les stats
+    // de visionnage (plays, rétention) remontent dans son dashboard.
+    // ============================================================
+    var vturbScript = document.createElement('script');
+    vturbScript.src = 'https://scripts.converteai.net/44ddd425-da4a-4a06-a6b4-1ae5a46727c5/players/6a7ed4ea324bb568d0591b93/v4/player.js';
+    vturbScript.async = true;
+    document.head.appendChild(vturbScript);
+
+    // Premier clic sur le player (en pratique : l'activation du son) → Pixel
+    var vslClicked = false;
+    document.getElementById('vsl').addEventListener('click', function () {
+      if (vslClicked) return;
+      vslClicked = true;
+      track('VSL_PlayClick');
+    });
+
+    // Témoignages vidéo : la miniature laisse place au lecteur (YouTube ou Drive) au clic
+    document.querySelectorAll('.tv-facade').forEach(function (b) {
+      b.addEventListener('click', function () {
+        track('Testi_Video_Click');
+        var cap = b.closest('figure').querySelector('figcaption');
+        if (cap) track('Testi_' + cap.textContent.normalize('NFD').replace(/[^a-zA-Z]+/g, '_').replace(/^_|_$/g, ''));
+        var f = document.createElement('iframe');
+        f.src = b.dataset.src;
+        f.allow = 'autoplay; fullscreen; encrypted-media';
+        f.allowFullscreen = true;
+        f.title = b.getAttribute('aria-label');
+        b.parentNode.insertBefore(f, b);
+        b.remove();
+      });
+    });
+
+    // --- Deadline : date du lendemain, recalée automatiquement chaque jour
+    var JOURS = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+    var MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
+    var demain = new Date();
+    demain.setDate(demain.getDate() + 1);
+    document.getElementById('deadlineDate').textContent =
+      JOURS[demain.getDay()] + ' ' + demain.getDate() + ' ' + MOIS[demain.getMonth()] + ' à minuit';
+
+    // --- CTA après 60 s (l'iframe iClosed ne se charge qu'à ce moment-là)
+    function revealCta() {
+      var ic = document.querySelector('.iclosed-embed iframe');
+      if (ic && !ic.src) {
+        var url = ic.dataset.src;
+        var qs2 = window.location.search;
+        if (qs2.length > 1) {
+          url += (url.indexOf('?') > -1 ? '&' : '?') + qs2.slice(1);
+        }
+        ic.src = url;
+      }
+      document.getElementById('reveal').classList.add('visible');
+    }
+    if (window.location.hash === '#cta') {
+      revealCta();
+    } else {
+      setTimeout(function () {
+        revealCta();
+        track('VSL_60s');
+      }, DELAY_MS);
+    }
+
+    // --- Temps passé sur la page, par paliers
+    [[30, 'Time_30s'], [60, 'Time_1min'], [120, 'Time_2min'], [180, 'Time_3min'],
+     [300, 'Time_5min'], [600, 'Time_10min']].forEach(function (b) {
+      setTimeout(function () { track(b[1]); }, b[0] * 1000);
+    });
+
+    // --- Profondeur de scroll
+    var scrollFired = {};
+    window.addEventListener('scroll', function () {
+      var p = (window.scrollY + window.innerHeight) / document.body.scrollHeight * 100;
+      [25, 50, 75, 90].forEach(function (m) {
+        if (!scrollFired[m] && p >= m) { scrollFired[m] = true; track('Scroll_' + m); }
+      });
+    }, { passive: true });
+
+    // --- Sections vues (une fois chacune)
+    var viewIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          track('View_' + e.target.dataset.view);
+          viewIo.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    document.querySelectorAll('[data-view]').forEach(function (el) { viewIo.observe(el); });
+
+    // --- Intention de sortie (souris vers le haut de la fenêtre, une fois)
+    var exitFired = false;
+    document.addEventListener('mouseout', function (e) {
+      if (!exitFired && !e.relatedTarget && e.clientY < 10) {
+        exitFired = true;
+        track('ExitIntent');
+      }
+    });
+
+    // --- Clics sur les liens du footer
+    document.querySelectorAll('.footer-links a').forEach(function (a) {
+      a.addEventListener('click', function () { track('Footer_Click'); });
+    });
+
+    // --- Transmission des UTM (et autres paramètres d'URL) à iClosed,
+    //     pour savoir quelle pub a généré chaque réservation.
+    //     L'iframe iClosed reçoit les siens dans revealCta().
+    var qs = window.location.search;
+    if (qs.length > 1) {
+      var params = qs.slice(1);
+      document.querySelectorAll('a.track-booking').forEach(function (a) {
+        a.href += (a.href.indexOf('?') > -1 ? '&' : '?') + params;
+      });
+    }
+
+    // --- Clics sur les boutons de réservation (global + par emplacement)
+    document.querySelectorAll('.track-booking').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        track('CTA_BookingClick');
+        if (btn.dataset.cta) track('CTA_Booking_' + btn.dataset.cta);
+      });
+    });
+
+    // --- Apparitions au scroll
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.fx').forEach(function (el) { io.observe(el); });
+
+    // --- Compteurs animés
+    function formatCount(value, format) {
+      if (format === 'rating') return (value / 10).toFixed(1).replace('.', ',') + '/5';
+      if (format === 'k') return Math.round(value / 1000) + ' 000';
+      return String(Math.round(value)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    }
+    function animateCount(el) {
+      var target = parseInt(el.dataset.target, 10);
+      var format = el.dataset.format;
+      if (reduced) { el.textContent = formatCount(target, format); return; }
+      var duration = 1400;
+      var start = null;
+      function tick(ts) {
+        if (!start) start = ts;
+        var p = Math.min((ts - start) / duration, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = formatCount(target * eased, format);
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+    var countIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          animateCount(e.target);
+          countIo.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.count').forEach(function (el) { countIo.observe(el); });
+  })();
+</script>
+<!-- /wp:html -->
