@@ -287,7 +287,7 @@
     font-family: var(--display);
     font-weight: 700;
     font-size: 1rem;
-    color: var(--white);
+    color: var(--white) !important;
     background: var(--navy);
     border-radius: 10px;
     padding: 17px 36px;
@@ -693,7 +693,7 @@
   }
   .final-cta .cta-btn {
     background: var(--mint);
-    color: var(--navy);
+    color: var(--navy) !important;
     box-shadow: 0 16px 40px -14px rgba(128, 185, 165, 0.45);
   }
   .final-cta .cta-note { color: rgba(239, 239, 239, 0.5); }
@@ -758,6 +758,9 @@
       font-size: clamp(1.6rem, 7.2vw, 2.1rem) !important;
       margin-bottom: 12px !important;
     }
+    .booking { padding: 26px 0 8px; }
+    .booking-sub { margin-bottom: 18px; }
+    .iclosed-embed { margin-top: 22px; }
     .hero-sub { font-size: 0.95rem; }
     .vsl-section { padding: 4px 0 24px; }
     .deadline {
@@ -807,8 +810,8 @@
 <div class="reveal" id="reveal">
   <section class="booking" id="reserver">
     <div class="wrap">
-      <h2>Échangeons sur votre situation</h2>
-      <p class="booking-sub">45 minutes en toute confidentialité avec un expert de l'équipe. Un point clair sur votre situation, votre capital et vos objectifs. Vous repartez avec une vision précise, que l'on travaille ensemble ou non.</p>
+      <h2>Réservez votre appel diagnostic</h2>
+      <p class="booking-sub">45 minutes en toute confidentialité avec un expert de l'équipe, pour un point clair sur votre situation et vos objectifs.</p>
       <a class="cta-btn track-booking" data-cta="Bloc60s" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" target="_blank" rel="noopener">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
       <p class="cta-note">Confidentiel et sans engagement</p>
       <div class="iclosed-embed">
@@ -1182,6 +1185,18 @@
         track('VSL_60s');
       }, DELAY_MS);
     }
+
+    // --- Sortie du plein écran vidéo : on amène direct au calendrier
+    ['fullscreenchange', 'webkitfullscreenchange'].forEach(function (evName) {
+      document.addEventListener(evName, function () {
+        var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+        if (!fsEl && document.getElementById('reveal').classList.contains('visible')) {
+          setTimeout(function () {
+            document.getElementById('reserver').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 400);
+        }
+      });
+    });
 
     // --- Temps passé sur la page, par paliers
     [[30, 'Time_30s'], [60, 'Time_1min'], [120, 'Time_2min'], [180, 'Time_3min'],
