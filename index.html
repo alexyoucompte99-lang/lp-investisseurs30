@@ -730,6 +730,14 @@
     outline-offset: 3px;
   }
 
+  /* Téléphone en paysage : la largeur dépasse 820 px (iPhone : 812 à 932 px)
+     mais la hauteur reste faible. Vidéo bord à bord là aussi, sinon le
+     Focused Fullscreen de VTurb laisse des bandes blanches sur les côtés. */
+  @media (max-height: 500px) {
+    .vsl-section .wrap { padding: 0; }
+    .vsl-frame { border-radius: 0; box-shadow: none; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { transition: none !important; animation: none !important; }
