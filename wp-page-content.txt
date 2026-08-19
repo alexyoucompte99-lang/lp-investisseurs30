@@ -3,13 +3,12 @@
 <script>!function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);</script>
 <link rel="preload" href="https://scripts.converteai.net/44ddd425-da4a-4a06-a6b4-1ae5a46727c5/players/6a7ed4ea324bb568d0591b93/v4/player.js" as="script">
 <link rel="preload" href="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js" as="script">
-<link rel="preload" href="https://cdn.converteai.net/44ddd425-da4a-4a06-a6b4-1ae5a46727c5/6a7ed4640701fa6d6b9daba2/main.m3u8" as="fetch">
 <link rel="dns-prefetch" href="https://cdn.converteai.net">
 <link rel="dns-prefetch" href="https://scripts.converteai.net">
 <link rel="dns-prefetch" href="https://license.vturb.com">
 
 <!-- ============================================================
-     META PIXEL : Investisseurs 3.0 Tunnel (686377034173439)
+     META PIXEL : Investisseurs 3.0 Tunnel (1625394888920444)
      Évènements envoyés par cette page :
        - PageView                    (arrivée sur la page = nombre de visiteurs)
        - VSL_PlayClick               (premier clic sur le player, en pratique l'activation du son)
@@ -37,8 +36,10 @@
   t.src=v;s=b.getElementsByTagName(e)[0];
   s.parentNode.insertBefore(t,s)}(window, document,'script',
   'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '686377034173439');
-  /* Pas de PageView : PixelYourSite l'envoie déjà avec le même pixel. */
+  fbq('init', '1625394888920444');
+  /* trackSingle : sur WordPress, PixelYourSite initialise aussi son propre
+     pixel ; on scope nos évènements au pixel de la LP pour ne pas polluer. */
+  fbq('trackSingle', '1625394888920444', 'PageView');
 </script>
 
 <style>
@@ -247,9 +248,10 @@
      players custom, la version position:fixed donne le même rendu. */
   html.vsl-fs-lock, html.vsl-fs-lock body { overflow: hidden !important; height: 100%; }
   .vsl-frame.vsl-fs {
-    position: fixed;
-    inset: 0;
-    z-index: 3000;
+    /* !important : sur WordPress, le CSS du thème/Elementor ne doit rien écraser */
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 2147483000 !important;
     width: 100vw;
     height: 100vh;
     height: 100dvh;
@@ -262,8 +264,28 @@
     justify-content: center;
   }
   .vsl-frame.vsl-fs vturb-smartplayer {
-    /* en paysage, la largeur est plafonnée pour que la vidéo 16/9 tienne dans l'écran */
+    /* en paysage, la largeur est plafonnée pour que la vidéo 16/9 tienne dans l'écran ;
+       flex none : sans ça, le cadre flex recompresse le player à la largeur de l'écran */
+    flex: none;
+    width: min(100vw, calc(100vh * 16 / 9)) !important;
     width: min(100vw, calc(100dvh * 16 / 9)) !important;
+  }
+  /* Téléphone tenu à la verticale : la vidéo pivote à 90° pour remplir
+     l'écran en paysage (la personne tourne son téléphone pour regarder).
+     Si l'appareil passe réellement en paysage, la media query ne
+     s'applique plus et la règle du dessus reprend la main. */
+  @media (orientation: portrait) {
+    .vsl-frame.vsl-fs vturb-smartplayer {
+      width: min(100vh, calc(100vw * 16 / 9)) !important;
+      width: min(100dvh, calc(100vw * 16 / 9)) !important;
+      transform: rotate(90deg);
+    }
+    /* La croix suit : en bas à droite du portrait = en haut à droite
+       une fois le téléphone tourné vers la vidéo */
+    .vsl-frame.vsl-fs .vsl-fs-close {
+      top: auto;
+      bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+    }
   }
   .vsl-fs-close {
     display: none;
@@ -468,7 +490,8 @@
   }
   .testi-videos {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    /* 3 interviews : une seule rangée équilibrée */
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     margin-top: 20px;
   }
@@ -965,13 +988,6 @@
         <figcaption>David &amp; Marianne</figcaption>
       </figure>
       <figure class="testi-video fx fx-d2">
-        <button class="tv-facade" data-src="https://drive.google.com/file/d/1Ubl1PKJpDr0zvvqaw1ak_x91o1h41LZH/preview" aria-label="Lire le témoignage de Ghislain">
-          <img src="https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/itw-ghislain.jpg" alt="Témoignage de Ghislain" loading="lazy">
-          <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
-        </button>
-        <figcaption>Ghislain</figcaption>
-      </figure>
-      <figure class="testi-video fx fx-d3">
         <button class="tv-facade" data-src="https://drive.google.com/file/d/11q48l1_uzczQLrEo7ltNIKwQ-SCEiLk6/preview" aria-label="Lire le témoignage de Louis">
           <img src="https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/itw-louis.jpg" alt="Témoignage de Louis" loading="lazy">
           <span class="tv-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="#0f1927"><path d="M8 5v14l11-7z"/></svg></span>
@@ -1164,7 +1180,7 @@
     // Envoi d'un évènement au Pixel Meta (sans erreur si le pixel est bloqué)
     function track(eventName) {
       if (typeof window.fbq === 'function') {
-        window.fbq('trackCustom', eventName);
+        window.fbq('trackSingleCustom', '1625394888920444', eventName);
       }
     }
 
@@ -1194,7 +1210,11 @@
       vslFrame.classList.add('vsl-fs');
       document.documentElement.classList.add('vsl-fs-lock');
       if (vslFrame.requestFullscreen) {
-        vslFrame.requestFullscreen().catch(function () {});
+        vslFrame.requestFullscreen().then(function () {
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(function () {});
+          }
+        }).catch(function () {});
       }
       track('VSL_Fullscreen');
     }
@@ -1202,6 +1222,8 @@
     function exitVslFullscreen() {
       vslFrame.classList.remove('vsl-fs');
       document.documentElement.classList.remove('vsl-fs-lock');
+      try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (err) {}
+      if (iclosedPending) { iclosedPending = false; loadIclosed(); }
       try {
         if (document.fullscreenElement || document.webkitFullscreenElement) {
           var p = (document.exitFullscreen || document.webkitExitFullscreen).call(document);
@@ -1231,18 +1253,29 @@
     });
 
     // Témoignages vidéo : la miniature laisse place au lecteur (YouTube ou Drive) au clic
+    var openTesti = null; // une seule vidéo témoignage chargée à la fois
     document.querySelectorAll('.tv-facade').forEach(function (b) {
       b.addEventListener('click', function () {
         track('Testi_Video_Click');
         var cap = b.closest('figure').querySelector('figcaption');
         if (cap) track('Testi_' + cap.textContent.normalize('NFD').replace(/[^a-zA-Z]+/g, '_').replace(/^_|_$/g, ''));
+        if (openTesti) {
+          openTesti.iframe.remove();
+          openTesti.btn.style.display = '';
+        }
         var f = document.createElement('iframe');
         f.src = b.dataset.src;
         f.allow = 'autoplay; fullscreen; encrypted-media';
         f.allowFullscreen = true;
+        if (b.dataset.src.indexOf('drive.google.com') > -1) {
+          /* Sans allow-popups ni allow-top-navigation : le bouton
+             "ouvrir dans Drive" du player ne peut plus faire quitter la page */
+          f.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
+        }
         f.title = b.getAttribute('aria-label');
         b.parentNode.insertBefore(f, b);
-        b.remove();
+        b.style.display = 'none';
+        openTesti = { iframe: f, btn: b };
       });
     });
 
@@ -1255,7 +1288,8 @@
       JOURS[demain.getDay()] + ' ' + demain.getDate() + ' ' + MOIS[demain.getMonth()] + ' à minuit';
 
     // --- CTA après 60 s (l'iframe iClosed ne se charge qu'à ce moment-là)
-    function revealCta() {
+    var iclosedPending = false;
+    function loadIclosed() {
       var ic = document.querySelector('.iclosed-embed iframe');
       if (ic && !ic.src) {
         var url = ic.dataset.src;
@@ -1264,6 +1298,16 @@
           url += (url.indexOf('?') > -1 ? '&' : '?') + qs2.slice(1);
         }
         ic.src = url;
+      }
+    }
+    function revealCta() {
+      /* Pendant le plein écran, on ne charge pas le calendrier iClosed :
+         ce gros iframe en pleine lecture crée des saccades (voire des
+         rechargements de Safari sur iPhone). Il se charge à la sortie. */
+      if (vslFrame.classList.contains('vsl-fs')) {
+        iclosedPending = true;
+      } else {
+        loadIclosed();
       }
       document.getElementById('reveal').classList.add('visible');
     }
@@ -1279,11 +1323,15 @@
     // --- Sortie du plein écran natif (bouton retour Android, Échap...) :
     //     on retire aussi la version fixée, et on amène au calendrier
     //     s'il est déjà révélé (géré dans exitVslFullscreen)
+    var foreignFs = false;
     ['fullscreenchange', 'webkitfullscreenchange'].forEach(function (evName) {
       document.addEventListener(evName, function () {
         var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-        if (!fsEl && vslFrame.classList.contains('vsl-fs')) {
-          exitVslFullscreen();
+        if (fsEl && fsEl !== vslFrame) { foreignFs = true; return; }
+        if (fsEl === vslFrame) { foreignFs = false; return; }
+        if (!fsEl) {
+          if (foreignFs) { foreignFs = false; return; }
+          if (vslFrame.classList.contains('vsl-fs')) exitVslFullscreen();
         }
       });
     });
