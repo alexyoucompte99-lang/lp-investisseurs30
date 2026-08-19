@@ -68,7 +68,14 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html { scroll-behavior: smooth; }
+  /* overflow-x sur html ET body : sur iOS Safari (page hébergée WordPress),
+     body seul ne suffit pas à bloquer le pan horizontal */
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  html, body { width: 100%; max-width: 100%; }
 
   body {
     background: var(--white);
@@ -80,8 +87,8 @@
     overflow-x: hidden;
   }
 
-  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
-  .wrap-narrow { max-width: 740px; margin: 0 auto; padding: 0 24px; }
+  .wrap { width: 100%; max-width: 960px; margin: 0 auto; padding: 0 24px; }
+  .wrap-narrow { width: 100%; max-width: 740px; margin: 0 auto; padding: 0 24px; }
 
   /* ---------- Scroll reveals ---------- */
   .fx {
@@ -143,6 +150,9 @@
     left: 50%;
     transform: translateX(-50%);
     width: 900px;
+    /* Plus large que l'écran sur mobile : clampé pour ne pas créer de
+       débordement horizontal qui décale toute la page */
+    max-width: 100vw;
     height: 520px;
     background: radial-gradient(ellipse at center, var(--mint-wash), transparent 65%);
     pointer-events: none;
@@ -796,6 +806,20 @@
   a:focus-visible {
     outline: 2px solid var(--mint-deep);
     outline-offset: 3px;
+  }
+
+  /* Mobile / tablette : aucun conteneur ni média ne doit dépasser la largeur
+     de l'écran, sinon toute la page se décale horizontalement (constaté sur
+     la version hébergée WordPress) */
+  @media (max-width: 1024px) {
+    header, section, footer,
+    .wrap, .wrap-narrow,
+    .proof, .marquee, .reveal,
+    .vsl-frame, .iclosed-embed, .deadline,
+    .testi-shorts, .testi-videos, .testi-grid, .steps, .about {
+      max-width: 100%;
+    }
+    img, svg, iframe, video { max-width: 100%; }
   }
 
   /* Téléphone en paysage : la largeur dépasse 820 px (iPhone : 812 à 932 px)
