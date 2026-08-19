@@ -61,6 +61,16 @@
 
   html { scroll-behavior: smooth; }
 
+  /* Filet de sécurité : jamais de défilement horizontal au niveau page
+     (bande blanche à droite), et les médias restent dans leur conteneur */
+  html, body {
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+  img, video, iframe {
+    max-width: 100%;
+  }
+
   body {
     background: var(--white);
     color: var(--navy);
@@ -127,6 +137,9 @@
     position: relative;
     padding: 68px 0 4px;
     text-align: center;
+    /* clippe le halo décoratif (900px de large) : sans ça, il crée un
+       défilement horizontal et une bande blanche à droite sur mobile */
+    overflow: hidden;
   }
   .hero-glow {
     position: absolute;
