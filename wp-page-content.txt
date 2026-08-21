@@ -1278,13 +1278,31 @@
     }
 
     var vslClicked = false;
-    vslFrame.addEventListener('click', function () {
+    function onVslTap(e) {
+      if (e.target && e.target.closest && e.target.closest('.vsl-fs-close')) return;
       if (!vslClicked) {
         vslClicked = true;
         track('VSL_PlayClick');
       }
       enterVslFullscreen();
-    });
+    }
+    /* Capture + détection de tap : le player VTurb consomme le clic (tap
+       "activer le son"), en phase de bulle notre handler ne reçoit rien et
+       le plein écran paysage ne se déclenche jamais. En capture on passe
+       avant lui. Le seuil de 15px écarte les glissements (scroll). */
+    var vslTapStart = null;
+    vslFrame.addEventListener('pointerdown', function (e) {
+      if (e.target && e.target.closest && e.target.closest('.vsl-fs-close')) return;
+      vslTapStart = { x: e.clientX, y: e.clientY };
+    }, true);
+    vslFrame.addEventListener('pointerup', function (e) {
+      if (!vslTapStart) return;
+      var dx = e.clientX - vslTapStart.x, dy = e.clientY - vslTapStart.y;
+      vslTapStart = null;
+      if (dx * dx + dy * dy > 15 * 15) return;
+      onVslTap(e);
+    }, true);
+    vslFrame.addEventListener('click', onVslTap, true);
     document.getElementById('vslFsClose').addEventListener('click', function (e) {
       e.stopPropagation();
       exitVslFullscreen();
@@ -1365,7 +1383,15 @@
     ['fullscreenchange', 'webkitfullscreenchange'].forEach(function (evName) {
       document.addEventListener(evName, function () {
         var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-        if (fsEl && fsEl !== vslFrame) { foreignFs = true; return; }
+        if (fsEl && fsEl !== vslFrame) {
+          foreignFs = true;
+          /* Plein écran lancé par le player VTurb lui-même : on force
+             aussi la bascule en paysage (Android ; sans effet sur iPhone) */
+          if (vslFrame.contains(fsEl) && screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(function () {});
+          }
+          return;
+        }
         if (fsEl === vslFrame) { foreignFs = false; return; }
         if (!fsEl) {
           if (foreignFs) { foreignFs = false; return; }
