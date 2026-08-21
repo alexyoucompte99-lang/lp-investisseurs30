@@ -26,7 +26,9 @@
                                      (sections réellement vues)
        - Testi_Video_Click + Testi_<Prénom> (clic sur un témoignage vidéo, lequel)
        - CTA_BookingClick + CTA_Booking_Bloc60s / CTA_Booking_Final
-                                     (clic réservation, global et par emplacement)
+                                     (clic réservation, global et par emplacement :
+                                      Bloc60s = lien de secours sous le calendrier,
+                                      Final = bouton du bas qui ramène au calendrier)
        - ExitIntent                  (souris qui part vers la barre du navigateur)
        - Footer_Click                (clic sur un lien légal)
      Les stats de visionnage détaillées (plays, rétention) sont dans
@@ -382,6 +384,14 @@
   }
   .cta-btn:hover .arrow { transform: translateX(4px); }
   .cta-note { margin-top: 14px; font-size: 0.8rem; color: var(--navy-soft); }
+  /* Lien de secours sous le calendrier intégré (au cas où l'iframe ne
+     s'affiche pas) : discret, pas de bouton concurrent du calendrier */
+  .cta-note a {
+    color: var(--navy-soft);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .cta-note a:hover { color: var(--navy); }
   .iclosed-embed {
     margin: 0 auto 24px;
     max-width: 780px;
@@ -909,8 +919,9 @@
         <!-- Chargé seulement au moment où le bloc devient visible (60 s), pour accélérer la page -->
         <iframe data-src="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" title="Réserver un appel diagnostic"></iframe>
       </div>
-      <a class="cta-btn track-booking" data-cta="Bloc60s" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" target="_blank" rel="noopener">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
-      <p class="cta-note">Le calendrier ne s'affiche pas ? Le bouton ouvre la réservation.</p>
+      <!-- Le calendrier est intégré juste au-dessus : pas de bouton qui
+           ouvre la même réservation ailleurs, seulement un lien de secours -->
+      <p class="cta-note">Le calendrier ne s'affiche pas ? <a class="track-booking" data-cta="Bloc60s" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" target="_blank" rel="noopener">Ouvrir la réservation</a></p>
     </div>
   </section>
 </div>
@@ -1179,7 +1190,7 @@
     <h2 class="fx">Votre patrimoine mérite une <em>vraie stratégie</em></h2>
     <p class="fx fx-d1">45 minutes pour faire le point et voir si notre accompagnement vous correspond. Indépendants, sans produit maison ni commission cachée.</p>
     <span class="fx fx-d2" style="display:inline-block">
-      <a class="cta-btn track-booking" data-cta="Final" href="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" target="_blank" rel="noopener">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
+      <a class="cta-btn track-booking goto-booking" data-cta="Final" href="#reserver">Réserver un appel diagnostic <span class="arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
     </span>
     <p class="cta-note fx fx-d3">Confidentiel et sans engagement</p>
   </div>
@@ -1407,6 +1418,7 @@
     if (qs.length > 1) {
       var params = qs.slice(1);
       document.querySelectorAll('a.track-booking').forEach(function (a) {
+        if (a.getAttribute('href').indexOf('http') !== 0) return; // ancre interne
         a.href += (a.href.indexOf('?') > -1 ? '&' : '?') + params;
       });
     }
@@ -1416,6 +1428,19 @@
       btn.addEventListener('click', function () {
         track('CTA_BookingClick');
         if (btn.dataset.cta) track('CTA_Booking_' + btn.dataset.cta);
+      });
+    });
+
+    // --- Bouton du bas de page : le calendrier est déjà dans la page, on ne
+    //     change pas de page. On révèle le bloc réservation (si la minute
+    //     n'est pas écoulée) puis on y amène en douceur.
+    document.querySelectorAll('.goto-booking').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        if (!document.getElementById('reveal').classList.contains('visible')) revealCta();
+        setTimeout(function () {
+          document.getElementById('reserver').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+        }, 60);
       });
     });
 
