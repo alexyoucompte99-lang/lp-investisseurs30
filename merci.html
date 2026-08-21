@@ -248,6 +248,8 @@
     text-wrap: balance;
   }
   .hero-sub strong { color: var(--navy); font-weight: 600; }
+  /* Le prénom ne se coupe jamais sur deux lignes (Marie-Laure, Jean-Marc) */
+  #firstName { white-space: nowrap; }
 
   /* Carte rendez-vous : affichée seulement si iClosed transmet la date */
   .rdv {

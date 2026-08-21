@@ -70,10 +70,18 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  html { scroll-behavior: smooth; }
+  /* overflow-x sur html ET body : sur iOS Safari (page hébergée WordPress),
+     body seul ne suffit pas à bloquer le pan horizontal */
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  html, body { width: 100%; max-width: 100%; }
 
   /* Filet de sécurité : jamais de défilement horizontal au niveau page
-     (bande blanche à droite), et les médias restent dans leur conteneur */
+     (bande blanche à droite). clip bloque aussi le scroll programmatique
+     sur navigateurs récents, hidden reste le fallback. */
   html, body {
     overflow-x: hidden;
     overflow-x: clip;
@@ -92,8 +100,8 @@
     overflow-x: hidden;
   }
 
-  .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
-  .wrap-narrow { max-width: 740px; margin: 0 auto; padding: 0 24px; }
+  .wrap { width: 100%; max-width: 960px; margin: 0 auto; padding: 0 24px; }
+  .wrap-narrow { width: 100%; max-width: 740px; margin: 0 auto; padding: 0 24px; }
 
   /* ---------- Scroll reveals ---------- */
   .fx {
@@ -158,6 +166,9 @@
     left: 50%;
     transform: translateX(-50%);
     width: 900px;
+    /* Plus large que l'écran sur mobile : clampé pour ne pas créer de
+       débordement horizontal qui décale toute la page */
+    max-width: 100vw;
     height: 520px;
     background: radial-gradient(ellipse at center, var(--mint-wash), transparent 65%);
     pointer-events: none;
@@ -310,6 +321,9 @@
       top: auto;
       bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     }
+    /* Le hint ne se montre que téléphone à la verticale : dès qu'on le
+       tourne (paysage), il n'a plus de raison d'être */
+    .vsl-frame.vsl-fs .vsl-rotate-hint.show { opacity: 1; }
   }
   .vsl-fs-close {
     display: none;
@@ -317,19 +331,44 @@
     top: calc(10px + env(safe-area-inset-top, 0px));
     right: calc(10px + env(safe-area-inset-right, 0px));
     z-index: 10;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: rgba(15, 25, 39, 0.55);
-    color: #fff;
-    font-size: 18px;
-    line-height: 40px;
+    /* !important : sur WordPress, les styles globaux de boutons du kit
+       Elementor écrasent sinon le rond discret (carré vert du thème) */
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: rgba(15, 25, 39, 0.55) !important;
+    color: #fff !important;
+    font-size: 18px !important;
+    line-height: 40px !important;
     text-align: center;
     cursor: pointer;
   }
   .vsl-frame.vsl-fs .vsl-fs-close { display: block; }
+  /* Indication "tournez votre téléphone" : visible quelques secondes à
+     l'entrée en plein écran, uniquement téléphone tenu à la verticale */
+  .vsl-rotate-hint {
+    position: absolute;
+    z-index: 9;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(15, 25, 39, 0.82);
+    color: #fff;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 100px;
+    padding: 12px 22px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
   .vsl-hint {
     text-align: center;
     font-size: 0.8rem;
@@ -821,6 +860,20 @@
     outline-offset: 3px;
   }
 
+  /* Mobile / tablette : aucun conteneur ni média ne doit dépasser la largeur
+     de l'écran, sinon toute la page se décale horizontalement (constaté sur
+     la version hébergée WordPress) */
+  @media (max-width: 1024px) {
+    header, section, footer,
+    .wrap, .wrap-narrow,
+    .proof, .marquee, .reveal,
+    .vsl-frame, .iclosed-embed, .deadline,
+    .testi-shorts, .testi-videos, .testi-grid, .steps, .about {
+      max-width: 100%;
+    }
+    img, svg, iframe, video { max-width: 100%; }
+  }
+
   /* Téléphone en paysage : la largeur dépasse 820 px (iPhone : 812 à 932 px)
      mais la hauteur reste faible. Vidéo bord à bord là aussi, sinon le
      Focused Fullscreen de VTurb laisse des bandes blanches sur les côtés. */
@@ -905,6 +958,7 @@
            de progression intelligente gérés nativement par VTurb -->
       <vturb-smartplayer id="vid-6a7ed4ea324bb568d0591b93" style="display: block; margin: 0 auto; width: 100%;"><div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 56.25% 0 0; z-index: 0; background-color: #0f1927;"></div></vturb-smartplayer>
       <button class="vsl-fs-close" id="vslFsClose" type="button" aria-label="Quitter le plein écran">✕</button>
+      <div class="vsl-rotate-hint" id="vslRotateHint" aria-hidden="true">📱 Tournez votre téléphone</div>
     </div>
   </div>
 </section>
@@ -1251,12 +1305,19 @@
           }
         }).catch(function () {});
       }
+      var hint = document.getElementById('vslRotateHint');
+      if (hint) {
+        hint.classList.add('show');
+        setTimeout(function () { hint.classList.remove('show'); }, 4000);
+      }
       track('VSL_Fullscreen');
     }
 
     function exitVslFullscreen() {
       vslFrame.classList.remove('vsl-fs');
       document.documentElement.classList.remove('vsl-fs-lock');
+      var hint = document.getElementById('vslRotateHint');
+      if (hint) hint.classList.remove('show');
       try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (err) {}
       if (iclosedPending) { iclosedPending = false; loadIclosed(); }
       try {
@@ -1275,13 +1336,31 @@
     }
 
     var vslClicked = false;
-    vslFrame.addEventListener('click', function () {
+    function onVslTap(e) {
+      if (e.target && e.target.closest && e.target.closest('.vsl-fs-close')) return;
       if (!vslClicked) {
         vslClicked = true;
         track('VSL_PlayClick');
       }
       enterVslFullscreen();
-    });
+    }
+    /* Capture + détection de tap : le player VTurb consomme le clic (tap
+       "activer le son"), en phase de bulle notre handler ne reçoit rien et
+       le plein écran paysage ne se déclenche jamais. En capture on passe
+       avant lui. Le seuil de 15px écarte les glissements (scroll). */
+    var vslTapStart = null;
+    vslFrame.addEventListener('pointerdown', function (e) {
+      if (e.target && e.target.closest && e.target.closest('.vsl-fs-close')) return;
+      vslTapStart = { x: e.clientX, y: e.clientY };
+    }, true);
+    vslFrame.addEventListener('pointerup', function (e) {
+      if (!vslTapStart) return;
+      var dx = e.clientX - vslTapStart.x, dy = e.clientY - vslTapStart.y;
+      vslTapStart = null;
+      if (dx * dx + dy * dy > 15 * 15) return;
+      onVslTap(e);
+    }, true);
+    vslFrame.addEventListener('click', onVslTap, true);
     document.getElementById('vslFsClose').addEventListener('click', function (e) {
       e.stopPropagation();
       exitVslFullscreen();
@@ -1362,7 +1441,15 @@
     ['fullscreenchange', 'webkitfullscreenchange'].forEach(function (evName) {
       document.addEventListener(evName, function () {
         var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
-        if (fsEl && fsEl !== vslFrame) { foreignFs = true; return; }
+        if (fsEl && fsEl !== vslFrame) {
+          foreignFs = true;
+          /* Plein écran lancé par le player VTurb lui-même : on force
+             aussi la bascule en paysage (Android ; sans effet sur iPhone) */
+          if (vslFrame.contains(fsEl) && screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(function () {});
+          }
+          return;
+        }
         if (fsEl === vslFrame) { foreignFs = false; return; }
         if (!fsEl) {
           if (foreignFs) { foreignFs = false; return; }
