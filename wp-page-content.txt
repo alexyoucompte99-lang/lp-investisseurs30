@@ -310,6 +310,9 @@
       top: auto;
       bottom: calc(10px + env(safe-area-inset-bottom, 0px));
     }
+    /* Le hint ne se montre que téléphone à la verticale : dès qu'on le
+       tourne (paysage), il n'a plus de raison d'être */
+    .vsl-frame.vsl-fs .vsl-rotate-hint.show { opacity: 1; }
   }
   .vsl-fs-close {
     display: none;
@@ -317,19 +320,44 @@
     top: calc(10px + env(safe-area-inset-top, 0px));
     right: calc(10px + env(safe-area-inset-right, 0px));
     z-index: 10;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    background: rgba(15, 25, 39, 0.55);
-    color: #fff;
-    font-size: 18px;
-    line-height: 40px;
+    /* !important : sur WordPress, les styles globaux de boutons du kit
+       Elementor écrasent sinon le rond discret (carré vert du thème) */
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: rgba(15, 25, 39, 0.55) !important;
+    color: #fff !important;
+    font-size: 18px !important;
+    line-height: 40px !important;
     text-align: center;
     cursor: pointer;
   }
   .vsl-frame.vsl-fs .vsl-fs-close { display: block; }
+  /* Indication "tournez votre téléphone" : visible quelques secondes à
+     l'entrée en plein écran, uniquement téléphone tenu à la verticale */
+  .vsl-rotate-hint {
+    position: absolute;
+    z-index: 9;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(15, 25, 39, 0.82);
+    color: #fff;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 100px;
+    padding: 12px 22px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
   .vsl-hint {
     text-align: center;
     font-size: 0.8rem;
@@ -909,6 +937,7 @@
            de progression intelligente gérés nativement par VTurb -->
       <vturb-smartplayer id="vid-6a7ed4ea324bb568d0591b93" style="display: block; margin: 0 auto; width: 100%;"><div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 56.25% 0 0; z-index: 0; background-color: #0f1927;"></div></vturb-smartplayer>
       <button class="vsl-fs-close" id="vslFsClose" type="button" aria-label="Quitter le plein écran">✕</button>
+      <div class="vsl-rotate-hint" id="vslRotateHint" aria-hidden="true">📱 Tournez votre téléphone</div>
     </div>
   </div>
 </section>
@@ -1254,12 +1283,19 @@
           }
         }).catch(function () {});
       }
+      var hint = document.getElementById('vslRotateHint');
+      if (hint) {
+        hint.classList.add('show');
+        setTimeout(function () { hint.classList.remove('show'); }, 4000);
+      }
       track('VSL_Fullscreen');
     }
 
     function exitVslFullscreen() {
       vslFrame.classList.remove('vsl-fs');
       document.documentElement.classList.remove('vsl-fs-lock');
+      var hint = document.getElementById('vslRotateHint');
+      if (hint) hint.classList.remove('show');
       try { if (screen.orientation && screen.orientation.unlock) screen.orientation.unlock(); } catch (err) {}
       if (iclosedPending) { iclosedPending = false; loadIclosed(); }
       try {
