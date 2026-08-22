@@ -528,10 +528,12 @@
     color: var(--mint-deep);
     margin-bottom: 14px;
   }
+  /* !important : sur WordPress, le kit Elementor (.elementor-kit-6 h2) a une
+     spécificité supérieure et remettait ces titres en graisse 600 / 40 px */
   .section-title {
-    font-family: var(--display);
-    font-weight: 900;
-    font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+    font-family: var(--display) !important;
+    font-weight: 900 !important;
+    font-size: clamp(1.5rem, 3.4vw, 2.1rem) !important;
     letter-spacing: -0.015em;
     line-height: 1.2;
     text-align: center;
