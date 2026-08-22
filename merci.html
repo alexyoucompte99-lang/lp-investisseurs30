@@ -947,8 +947,28 @@
         + (when ? ' du ' + when : '') + '. À bientôt !';
       var waBtn = document.getElementById('waBtn');
       waBtn.href = 'https://wa.me/' + c.wa + '?text=' + encodeURIComponent(waMsg);
+      // Suivi closing : chaque clic est noté dans l'onglet « Confirmations
+      // WhatsApp » du Sheet closing (pont Apps Script, clé publique limitée
+      // à cet usage). La console « Calls à venir » s'en sert pour voir qui a
+      // cliqué, et le closer coche « reçu » quand le message arrive vraiment.
+      var PONT = { url: 'https://script.google.com/macros/s/AKfycbyTdIBuoj50rJ5IxRy-mmT4XuK585jqC985KbsUTksUJlO2Tn_E4Ys3LHYFAdb_sui_/exec', key: 'wa-d9705869f93969f073de796c' };
+      var utmTxt = [param(['utm_campaign']), param(['utm_content'])].filter(Boolean).join(' / ').slice(0, 100);
+      function notePont() {
+        var body = JSON.stringify({
+          key: PONT.key, what: 'wa_confirm', statut: 'CLIC', source: 'page',
+          lead: (full || '').slice(0, 80), email: (mail || '').slice(0, 80),
+          closer: c.name, call: start ? start.toISOString() : (startRaw || '').slice(0, 40), utm: utmTxt
+        });
+        var sent = false;
+        try { if (navigator.sendBeacon) sent = navigator.sendBeacon(PONT.url, body); } catch (e) {}
+        if (!sent) {
+          try { fetch(PONT.url, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body: body }); } catch (e2) {}
+        }
+      }
+      var noted = false;
       waBtn.addEventListener('click', function () {
         if (typeof window.fbq === 'function') window.fbq('trackSingleCustom', '1625394888920444', 'ThankYou_WhatsApp_Click');
+        if (!noted) { noted = true; notePont(); }
       });
       document.getElementById('closer').hidden = false;
     }
