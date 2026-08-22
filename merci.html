@@ -629,10 +629,12 @@
 
 <script>
 <!--
-  /* L'enveloppe <!-- ... //--> est indispensable sur WordPress : wptexturize
-     lit tout « < ... > » d'un script comme une balise HTML et y convertit les
-     & en &#038; (donc && devient invalide). Un commentaire HTML, lui, est
-     ignoré ; le moteur JS ignore ces deux lignes. Ne pas retirer. */
+  /* L'enveloppe en commentaire HTML (ligne du dessus et avant-dernière ligne
+     du script) est indispensable sur WordPress : wptexturize lit tout
+     « < ... > » d'un script comme une balise HTML et y convertit les & en
+     &#038; (donc && devient invalide). Un commentaire HTML, lui, est ignoré ;
+     le moteur JS ignore ces deux lignes. Ne pas retirer, et ne jamais écrire
+     la séquence de fin de commentaire HTML à l'intérieur du script. */
   (function () {
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
