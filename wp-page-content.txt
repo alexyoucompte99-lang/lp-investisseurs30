@@ -427,14 +427,12 @@
   .iclosed-embed {
     margin: 0 auto 24px;
     max-width: 780px;
+    height: 640px;
     border-radius: 14px;
     overflow: hidden;
     border: 1px solid var(--line);
     background: var(--surface);
   }
-  /* Intégration officielle iClosed (widget.js) : le conteneur .iclosed-widget
-     reçoit l'iframe, et sa hauteur suit le contenu (data-resize) */
-  .iclosed-embed .iclosed-widget { width: 100%; height: 640px; }
   .iclosed-embed iframe { width: 100%; height: 100%; border: 0; display: block; }
 
   /* ---------- Marquee ---------- */
@@ -966,13 +964,13 @@
       <h2>Réservez votre appel diagnostic</h2>
       <p class="booking-sub">45 minutes en toute confidentialité avec un expert de l'équipe. Sans engagement.</p>
       <div class="iclosed-embed">
-        <!-- Intégration officielle iClosed : widget.js (chargé seulement quand le
-             bloc devient visible, 60 s) crée l'iframe dans ce conteneur, lui
-             transmet les paramètres de l'URL (UTM) et surtout gère la
-             redirection après réservation (message openInParentTab → la page
-             merci s'ouvre dans cet onglet). Une iframe brute laissait iClosed
-             tourner indéfiniment après la confirmation. -->
-        <div class="iclosed-widget" data-url="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" data-resize="true" title="Réserver un appel diagnostic"></div>
+        <!-- Iframe chargée seulement quand le bloc devient visible (60 s).
+             Le formulaire défile à l'intérieur (hauteur fixe). La redirection
+             vers la page merci après réservation est gérée par le listener
+             « message » plus bas (iClosed envoie openInParentTab à la page
+             hôte). On n'utilise PAS widget.js d'iClosed : son redimensionnement
+             automatique oublie l'étape des questions et coupe le formulaire. -->
+        <iframe data-src="https://app.iclosed.io/e/investisseurs-3-0/appel-diagnostic-club-investisseurs-3-0" title="Réserver un appel diagnostic"></iframe>
       </div>
       <!-- Le calendrier est intégré juste au-dessus : pas de bouton qui
            ouvre la même réservation ailleurs, seulement un lien de secours -->
@@ -1404,17 +1402,32 @@
 
     // --- CTA après 60 s (l'iframe iClosed ne se charge qu'à ce moment-là)
     var iclosedPending = false;
-    var iclosedLoaded = false;
     function loadIclosed() {
-      if (iclosedLoaded) return;
-      iclosedLoaded = true;
-      // widget.js trouve .iclosed-widget, crée l'iframe et y ajoute lui-même
-      // les paramètres de l'URL de la page (UTM)
-      var w = document.createElement('script');
-      w.src = 'https://app.iclosed.io/assets/widget.js';
-      w.async = true;
-      document.head.appendChild(w);
+      var ic = document.querySelector('.iclosed-embed iframe');
+      if (ic && !ic.src) {
+        var url = ic.dataset.src;
+        var qs2 = window.location.search;
+        if (qs2.length > 1) {
+          url += (url.indexOf('?') > -1 ? '&' : '?') + qs2.slice(1);
+        }
+        ic.src = url;
+      }
     }
+
+    // --- Redirection après réservation. Dans une iframe, iClosed n'ouvre pas
+    //     lui-même la page de confirmation configurée : il envoie à la page
+    //     hôte un message { type: 'openInParentTab', url } (c'est ce que fait
+    //     son widget.js). On l'écoute ici et on ouvre la page merci dans cet
+    //     onglet, avec les paramètres (prénom, date, closer, UTM) qu'il ajoute.
+    window.addEventListener('message', function (e) {
+      if (e.origin !== 'https://app.iclosed.io') return;
+      var ic = document.querySelector('.iclosed-embed iframe');
+      if (ic && ic.contentWindow && e.source !== ic.contentWindow) return;
+      var d = e.data || {};
+      if (d.type === 'openInParentTab' && typeof d.url === 'string' && d.url.indexOf('https://') === 0) {
+        window.location.href = d.url;
+      }
+    });
     function revealCta() {
       /* Pendant le plein écran, on ne charge pas le calendrier iClosed :
          ce gros iframe en pleine lecture crée des saccades (voire des
