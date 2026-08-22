@@ -617,6 +617,11 @@
 </footer>
 
 <script>
+<!--
+  /* L'enveloppe <!-- ... //--> est indispensable sur WordPress : wptexturize
+     lit tout « < ... > » d'un script comme une balise HTML et y convertit les
+     & en &#038; (donc && devient invalide). Un commentaire HTML, lui, est
+     ignoré ; le moteur JS ignore ces deux lignes. Ne pas retirer. */
   (function () {
     var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -728,6 +733,7 @@
     document.querySelectorAll('.fx').forEach(function (el) { io.observe(el); });
     if (reduced) document.querySelectorAll('.fx').forEach(function (el) { el.classList.add('in'); });
   })();
+//-->
 </script>
 
 <!-- /wp:html -->
