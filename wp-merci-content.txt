@@ -334,6 +334,7 @@
     margin-right: 8px;
   }
   .closer-avatar {
+    position: relative;
     width: 96px;
     height: 96px;
     border-radius: 50%;
@@ -345,8 +346,19 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
     box-shadow: 0 0 0 8px var(--mint-wash);
   }
+  /* Photo du closer quand on l'a (sinon l'initiale reste visible) */
+  .closer-avatar img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+  }
+  .closer-avatar.has-photo img { display: block; }
   .closer-label {
     font-size: 0.72rem;
     font-weight: 600;
@@ -666,7 +678,7 @@
          correspond à un closer connu (numéros dans le script). -->
     <div class="closer-block fx in fx-d2" id="closer" hidden>
       <div class="closer">
-        <div class="closer-avatar" id="closerInitial" aria-hidden="true">L</div>
+        <div class="closer-avatar" id="closerAvatar" aria-hidden="true"><span id="closerInitial">L</span><img id="closerPhoto" alt="" src=""></div>
         <div>
           <p class="closer-label">Dernière étape · Confirmez votre audit</p>
           <h2 class="closer-name">Confirmez votre audit à <span class="closer-first">votre expert</span> en un clic</h2>
@@ -884,10 +896,11 @@
 
     // --- Closer assigné (paramètre assigned_to d'iClosed) : carte + WhatsApp.
     //     Les numéros sont ici ; ajouter une ligne par nouveau closer.
+    var PHOTOS = 'https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/';
     var CLOSERS = {
-      louis:  { name: 'Louis Granier', phone: '+33 7 50 34 87 98', wa: '33750348798' },
-      romain: { name: 'Romain Gourand', phone: '+33 7 81 24 05 72', wa: '33781240572' },
-      adrien: { name: 'Adrien Soret',   phone: '+33 6 31 14 76 88', wa: '33631147688' }
+      louis:  { name: 'Louis Granier',  phone: '+33 7 50 34 87 98', wa: '33750348798' },
+      romain: { name: 'Romain Gourand', phone: '+33 7 81 24 05 72', wa: '33781240572', photo: 'closer-romain.jpg' },
+      adrien: { name: 'Adrien Soret',   phone: '+33 6 31 14 76 88', wa: '33631147688', photo: 'closer-adrien.jpg' }
     };
     var assigned = param(['assigned_to', 'closer', 'assigned', 'host_name']);
     var normAssigned = assigned.toLowerCase();
@@ -907,6 +920,11 @@
         }
       }
       document.getElementById('closerInitial').textContent = cFirst.charAt(0).toUpperCase();
+      if (c.photo) {
+        var ph = document.getElementById('closerPhoto');
+        ph.onload = function () { document.getElementById('closerAvatar').classList.add('has-photo'); };
+        ph.src = PHOTOS + c.photo;
+      }
       document.getElementById('closerName').textContent = cDisplay;
       var telA = document.getElementById('closerTel');
       telA.textContent = c.phone;
