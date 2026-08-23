@@ -19,6 +19,7 @@
      Évènements envoyés par cette page :
        - PageView                    (arrivée sur la page = nombre de visiteurs)
        - VSL_PlayClick               (premier clic sur le player, en pratique l'activation du son)
+       - VSL_Fullscreen              (clic sur le bouton plein écran de la page, mobile)
        - VSL_60s                     (toujours sur la page après 60 s, moment où le CTA apparaît)
        - Time_30s / 1min / 2min / 3min / 5min / 10min (temps passé sur la page)
        - Scroll_25 / 50 / 75 / 90    (profondeur de scroll)
@@ -276,9 +277,11 @@
       0 0 0 6px rgba(128, 185, 165, 0.12);
   }
 
-  /* --- Vrai plein écran mobile : au premier tap sur la vidéo, elle se
-     fixe sur tout l'écran (croix pour sortir). Plein écran natif en plus
-     quand le navigateur l'autorise (Android) ; sur iPhone il n'existe
+  /* --- Plein écran mobile « comme YouTube » : la vidéo se lit normalement
+     dans la page ; un bouton plein écran (coin bas droit du player, mobile
+     seulement) la fixe sur tout l'écran EN PAYSAGE (croix pour sortir).
+     Plein écran natif + paysage forcé quand le navigateur l'autorise
+     (Android) ; sur iPhone il n'existe
      aucune API de plein écran pour un player custom (seul le lecteur
      vidéo d'Apple est plein écran, et il affiche durée + barre de
      lecture), la version position:fixed est donc la seule possible.
@@ -341,6 +344,34 @@
      fonctionnement, la barre redevient juste visible en permanence. */
   vturb-smartplayer { --fakebar-height: 0px !important; }
   vturb-smartplayer.lp-bar-show { --fakebar-height: 8px !important; }
+  /* Bouton plein écran de la page (mobile seulement : sur ordinateur, le
+     bouton plein écran natif de VTurb fait un vrai plein écran). Toujours
+     visible mais discret, un peu plus marqué quand la personne touche la
+     vidéo (classe lp-bar-show sur le player, posée en même temps que la
+     barre de progression). Masqué en plein écran (la croix prend le relais). */
+  .vsl-fs-btn {
+    display: none;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    z-index: 10;
+    width: 40px !important;
+    height: 40px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 10px !important;
+    background: rgba(15, 25, 39, 0.55) !important;
+    color: #fff !important;
+    line-height: 0 !important;
+    cursor: pointer;
+    opacity: 0.75;
+    transition: opacity 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .vsl-fs-btn svg { width: 20px; height: 20px; display: block; margin: 0 auto; }
+  html.lp-mobile .vsl-fs-btn { display: block; }
+  .vsl-frame:has(vturb-smartplayer.lp-bar-show) .vsl-fs-btn { opacity: 1; }
+  .vsl-frame.vsl-fs .vsl-fs-btn { display: none !important; }
   .vsl-fs-close {
     display: none;
     position: absolute;
@@ -976,6 +1007,7 @@
            nativement par VTurb ; sa barre de progression intelligente est
            masquée par la page (visible 3 s au toucher, voir CSS/JS) -->
       <vturb-smartplayer id="vid-6a7ed4ea324bb568d0591b93" style="display: block; margin: 0 auto; width: 100%;"><div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 56.25% 0 0; z-index: 0; background-color: #0f1927;"></div></vturb-smartplayer>
+      <button class="vsl-fs-btn" id="vslFsBtn" type="button" aria-label="Plein écran"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5"/><path d="M20 9V4h-5"/><path d="M4 15v5h5"/><path d="M20 15v5h-5"/></svg></button>
       <button class="vsl-fs-close" id="vslFsClose" type="button" aria-label="Quitter le plein écran">✕</button>
       <div class="vsl-rotate-hint" id="vslRotateHint" aria-hidden="true">📱 Tournez votre téléphone</div>
     </div>
@@ -1307,14 +1339,14 @@
     vturbScript.async = true;
     document.head.appendChild(vturbScript);
 
-    // Premier clic sur le player (en pratique : l'activation du son) → Pixel
-    // + passage en vrai plein écran sur mobile : la vidéo se fixe sur tout
-    // l'écran et la page ne défile plus. Une seule entrée automatique :
-    // si la personne ferme avec la croix, on ne la repiège pas.
+    // Premier clic sur le player (en pratique : l'activation du son) → Pixel.
+    // Plein écran « comme YouTube » : la vidéo se lit dans la page, et le
+    // bouton plein écran (mobile) la fixe sur tout l'écran en paysage ;
+    // la croix ramène dans la page. Jamais de plein écran automatique.
     var vslFrame = document.getElementById('vsl');
     var vslPlayer = vslFrame.querySelector('vturb-smartplayer');
     var isMobileScreen = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-    var vslFsDone = false;
+    if (isMobileScreen) document.documentElement.classList.add('lp-mobile');
     var vslFsScroll = 0;
 
     /* Mise en page du plein écran d'après le viewport RÉEL (visualViewport
@@ -1389,8 +1421,7 @@
     }
 
     function enterVslFullscreen() {
-      if (vslFsDone || !isMobileScreen) return;
-      vslFsDone = true;
+      if (!isMobileScreen || vslFrame.classList.contains('vsl-fs')) return;
       vslFsScroll = window.scrollY;
       /* jamais tout en haut : un glissement vers le bas sur l'écran noir
          déclencherait sinon le « tirer pour rafraîchir » de Safari
@@ -1449,21 +1480,20 @@
 
     var vslClicked = false;
     function onVslTap(e) {
-      if (e.target && e.target.closest && e.target.closest('.vsl-fs-close')) return;
+      if (e.target && e.target.closest && e.target.closest('.vsl-fs-close, .vsl-fs-btn')) return;
       if (!vslClicked) {
         vslClicked = true;
         track('VSL_PlayClick');
       }
-      enterVslFullscreen();
     }
     /* Capture + détection de tap : le player VTurb consomme le clic (tap
        "activer le son"), en phase de bulle notre handler ne reçoit rien et
-       le plein écran paysage ne se déclenche jamais. En capture on passe
-       avant lui. Le seuil de 15px écarte les glissements (scroll). */
+       VSL_PlayClick ne partirait jamais. En capture on passe avant lui. Le
+       seuil de 15px écarte les glissements (scroll). */
     var vslTapStart = null;
     vslFrame.addEventListener('pointerdown', function (e) {
       showVslBar();
-      if (e.target && e.target.closest && e.target.closest('.vsl-fs-close')) return;
+      if (e.target && e.target.closest && e.target.closest('.vsl-fs-close, .vsl-fs-btn')) return;
       vslTapStart = { x: e.clientX, y: e.clientY };
     }, true);
     // Barre de progression intelligente : visible 3 s après un toucher
@@ -1513,6 +1543,11 @@
     document.getElementById('vslFsClose').addEventListener('click', function (e) {
       e.stopPropagation();
       exitVslFullscreen();
+    });
+    document.getElementById('vslFsBtn').addEventListener('click', function (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      enterVslFullscreen();
     });
 
     // Témoignages vidéo : la miniature laisse place au lecteur (YouTube ou Drive) au clic
