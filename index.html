@@ -277,11 +277,22 @@
   }
 
   /* --- Vrai plein écran mobile : au premier tap sur la vidéo, elle se
-     fixe sur tout l'écran et le scroll de la page est verrouillé (croix
-     pour sortir). Plein écran natif en plus quand le navigateur
-     l'autorise (Android) ; sur iPhone l'API native est bridée sur les
-     players custom, la version position:fixed donne le même rendu. */
-  html.vsl-fs-lock, html.vsl-fs-lock body { overflow: hidden !important; height: 100%; }
+     fixe sur tout l'écran (croix pour sortir). Plein écran natif en plus
+     quand le navigateur l'autorise (Android) ; sur iPhone il n'existe
+     aucune API de plein écran pour un player custom (seul le lecteur
+     vidéo d'Apple est plein écran, et il affiche durée + barre de
+     lecture), la version position:fixed est donc la seule possible.
+     La MISE EN PAGE (largeur du player, rotation 90° téléphone tenu à la
+     verticale) est calculée en JS d'après le viewport réel (layoutVslFs,
+     variable --lp-fs-w posée sur le cadre) : une media query faisait
+     sauter l'image à la rotation du téléphone (viewport mis à jour en
+     plusieurs fois par Safari, player VTurb recalculé à chaque fois).
+     Le scroll de la page n'est PAS bloqué : la page défile derrière
+     l'écran noir (invisible), et c'est le seul moyen pour que Safari
+     replie sa barre d'adresse (il ne le fait que sur un défilement de
+     l'utilisateur, jamais par code). overscroll-behavior : pas de
+     « tirer pour rafraîchir » par accident. */
+  html.vsl-fs-lock, html.vsl-fs-lock body { overscroll-behavior: none; }
   .vsl-frame.vsl-fs {
     /* !important : sur WordPress, le CSS du thème/Elementor ne doit rien écraser */
     position: fixed !important;
@@ -299,32 +310,37 @@
     justify-content: center;
   }
   .vsl-frame.vsl-fs vturb-smartplayer {
-    /* en paysage, la largeur est plafonnée pour que la vidéo 16/9 tienne dans l'écran ;
-       flex none : sans ça, le cadre flex recompresse le player à la largeur de l'écran */
+    /* largeur calculée en JS ; flex none : sans ça, le cadre flex
+       recompresse le player à la largeur de l'écran */
     flex: none;
-    width: min(100vw, calc(100vh * 16 / 9)) !important;
-    width: min(100vw, calc(100dvh * 16 / 9)) !important;
+    width: var(--lp-fs-w, 100vw) !important;
+    max-width: none !important;
+    transform-origin: center center;
+    transition: none !important;
   }
-  /* Téléphone tenu à la verticale : la vidéo pivote à 90° pour remplir
-     l'écran en paysage (la personne tourne son téléphone pour regarder).
-     Si l'appareil passe réellement en paysage, la media query ne
-     s'applique plus et la règle du dessus reprend la main. */
-  @media (orientation: portrait) {
-    .vsl-frame.vsl-fs vturb-smartplayer {
-      width: min(100vh, calc(100vw * 16 / 9)) !important;
-      width: min(100dvh, calc(100vw * 16 / 9)) !important;
-      transform: rotate(90deg);
-    }
-    /* La croix suit : en bas à droite du portrait = en haut à droite
-       une fois le téléphone tourné vers la vidéo */
-    .vsl-frame.vsl-fs .vsl-fs-close {
-      top: auto;
-      bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-    }
-    /* Le hint ne se montre que téléphone à la verticale : dès qu'on le
-       tourne (paysage), il n'a plus de raison d'être */
-    .vsl-frame.vsl-fs .vsl-rotate-hint.show { opacity: 1; }
+  /* Téléphone tenu à la verticale (classe posée par layoutVslFs) : la
+     vidéo pivote à 90° pour remplir l'écran en paysage */
+  .vsl-frame.vsl-fs.vsl-fs-portrait vturb-smartplayer { transform: rotate(90deg); }
+  /* Pendant une rotation du téléphone : player masqué le temps que Safari
+     stabilise son viewport et que VTurb se recalcule (sinon l'image saute
+     et se redimensionne en plusieurs étapes visibles) */
+  .vsl-frame.vsl-fs.vsl-relayout vturb-smartplayer { opacity: 0; }
+  /* La croix suit : en bas à droite du portrait = en haut à droite
+     une fois le téléphone tourné vers la vidéo */
+  .vsl-frame.vsl-fs.vsl-fs-portrait .vsl-fs-close {
+    top: auto;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px));
   }
+  /* Le hint ne se montre que téléphone tenu à la verticale */
+  .vsl-frame.vsl-fs.vsl-fs-portrait .vsl-rotate-hint.show { opacity: 1; }
+  /* Barre de progression intelligente VTurb (« fakebar ») : masquée par
+     défaut, visible ~3 s quand la personne touche la vidéo (classe
+     lp-bar-show posée en JS). VTurb lit sa hauteur dans la variable
+     --fakebar-height qu'il pose en style inline sur l'élément ; un
+     !important de feuille de style passe devant. Si VTurb change son
+     fonctionnement, la barre redevient juste visible en permanence. */
+  vturb-smartplayer { --fakebar-height: 0px !important; }
+  vturb-smartplayer.lp-bar-show { --fakebar-height: 8px !important; }
   .vsl-fs-close {
     display: none;
     position: absolute;
@@ -956,8 +972,9 @@
       <span>Vidéo disponible jusqu'au <strong id="deadlineDate">demain à minuit</strong></span>
     </div>
     <div class="vsl-frame fx in fx-d3" id="vsl">
-      <!-- Player VTurb : autoplay muet, overlay "activer le son" et barre
-           de progression intelligente gérés nativement par VTurb -->
+      <!-- Player VTurb : autoplay muet et overlay "activer le son" gérés
+           nativement par VTurb ; sa barre de progression intelligente est
+           masquée par la page (visible 3 s au toucher, voir CSS/JS) -->
       <vturb-smartplayer id="vid-6a7ed4ea324bb568d0591b93" style="display: block; margin: 0 auto; width: 100%;"><div class="vturb-player-placeholder" style="position: relative; width: 100%; padding: 56.25% 0 0; z-index: 0; background-color: #0f1927;"></div></vturb-smartplayer>
       <button class="vsl-fs-close" id="vslFsClose" type="button" aria-label="Quitter le plein écran">✕</button>
       <div class="vsl-rotate-hint" id="vslRotateHint" aria-hidden="true">📱 Tournez votre téléphone</div>
@@ -1295,16 +1312,99 @@
     // l'écran et la page ne défile plus. Une seule entrée automatique :
     // si la personne ferme avec la croix, on ne la repiège pas.
     var vslFrame = document.getElementById('vsl');
+    var vslPlayer = vslFrame.querySelector('vturb-smartplayer');
     var isMobileScreen = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
     var vslFsDone = false;
     var vslFsScroll = 0;
+
+    /* Mise en page du plein écran d'après le viewport RÉEL (visualViewport
+       suit la barre d'adresse de Safari quand elle se replie) :
+       - téléphone tenu à la verticale : player pivoté de 90°, sa largeur =
+         la hauteur de l'écran (plafonnée par la largeur × 16/9) ;
+       - paysage réel (téléphone tourné, ou Android en plein écran natif
+         verrouillé paysage) : pas de rotation, largeur = largeur de l'écran
+         (plafonnée par la hauteur × 16/9).
+       Tout passe par la variable CSS --lp-fs-w posée sur NOTRE cadre :
+       VTurb réécrit parfois le style inline de son élément, il ne peut
+       donc pas effacer notre largeur. */
+    function vslViewport() {
+      var vv = window.visualViewport;
+      return {
+        w: (vv && vv.width) ? vv.width : window.innerWidth,
+        h: (vv && vv.height) ? vv.height : window.innerHeight
+      };
+    }
+    function layoutVslFs() {
+      if (!vslFrame.classList.contains('vsl-fs')) return;
+      var v = vslViewport();
+      var portrait = v.h > v.w;
+      var width = portrait ? Math.min(v.h, v.w * 16 / 9) : Math.min(v.w, v.h * 16 / 9);
+      vslFrame.style.setProperty('--lp-fs-w', Math.floor(width) + 'px');
+      vslFrame.classList.toggle('vsl-fs-portrait', portrait);
+      if (!portrait) {
+        var hint = document.getElementById('vslRotateHint');
+        if (hint) hint.classList.remove('show');
+      }
+      return portrait;
+    }
+    /* Rotation du téléphone : Safari envoie une salve de resize
+       (orientation, barre d'adresse, safe areas) et VTurb recalcule son
+       player à chacun → player masqué pendant la salve, ré-affiché 300 ms
+       après le dernier évènement. Un simple resize sans changement
+       d'orientation (barre d'adresse qui se replie) ne masque rien. */
+    var vslLastPortrait = null;
+    var vslRelayoutTimer = null;
+    function onVslViewportChange(ev) {
+      if (!vslFrame.classList.contains('vsl-fs')) return;
+      var v = vslViewport();
+      var portrait = v.h > v.w;
+      var flip = (ev && ev.type !== 'resize') ||
+                 (vslLastPortrait !== null && portrait !== vslLastPortrait);
+      if (flip || vslFrame.classList.contains('vsl-relayout')) {
+        vslFrame.classList.add('vsl-relayout');
+        clearTimeout(vslRelayoutTimer);
+        vslRelayoutTimer = setTimeout(function () {
+          layoutVslFs();
+          vslFrame.classList.remove('vsl-relayout');
+        }, 300);
+      }
+      layoutVslFs();
+      vslLastPortrait = portrait;
+    }
+    window.addEventListener('resize', onVslViewportChange);
+    window.addEventListener('orientationchange', onVslViewportChange);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', onVslViewportChange);
+    if (screen.orientation && screen.orientation.addEventListener) {
+      screen.orientation.addEventListener('change', onVslViewportChange);
+    }
+    /* Filet de sécurité (navigateurs intégrés Instagram/Facebook, évènements
+       capricieux) : pendant le plein écran, on re-mesure le viewport toutes
+       les 400 ms et on relance la mise en page s'il a changé */
+    var vslPollTimer = null;
+    var vslLastDims = '';
+    function vslPoll() {
+      var v = vslViewport();
+      var k = Math.round(v.w) + 'x' + Math.round(v.h);
+      if (k !== vslLastDims) { vslLastDims = k; onVslViewportChange({ type: 'resize' }); }
+    }
 
     function enterVslFullscreen() {
       if (vslFsDone || !isMobileScreen) return;
       vslFsDone = true;
       vslFsScroll = window.scrollY;
+      /* jamais tout en haut : un glissement vers le bas sur l'écran noir
+         déclencherait sinon le « tirer pour rafraîchir » de Safari
+         (écrit sans signe inférieur : wptexturize, voir make_wp_content.py) */
+      window.scrollTo({ top: Math.max(vslFsScroll, 2), left: 0, behavior: 'instant' });
       vslFrame.classList.add('vsl-fs');
       document.documentElement.classList.add('vsl-fs-lock');
+      vslLastPortrait = null;
+      var portrait = layoutVslFs();
+      vslLastPortrait = portrait;
+      var v0 = vslViewport();
+      vslLastDims = Math.round(v0.w) + 'x' + Math.round(v0.h);
+      clearInterval(vslPollTimer);
+      vslPollTimer = setInterval(vslPoll, 400);
       if (vslFrame.requestFullscreen) {
         vslFrame.requestFullscreen().then(function () {
           if (screen.orientation && screen.orientation.lock) {
@@ -1313,7 +1413,7 @@
         }).catch(function () {});
       }
       var hint = document.getElementById('vslRotateHint');
-      if (hint) {
+      if (hint && portrait) {
         hint.classList.add('show');
         setTimeout(function () { hint.classList.remove('show'); }, 4000);
       }
@@ -1322,6 +1422,11 @@
 
     function exitVslFullscreen() {
       vslFrame.classList.remove('vsl-fs');
+      vslFrame.classList.remove('vsl-fs-portrait');
+      vslFrame.classList.remove('vsl-relayout');
+      vslFrame.style.removeProperty('--lp-fs-w');
+      clearInterval(vslPollTimer);
+      vslPollTimer = null;
       document.documentElement.classList.remove('vsl-fs-lock');
       var hint = document.getElementById('vslRotateHint');
       if (hint) hint.classList.remove('show');
@@ -1338,7 +1443,7 @@
           document.getElementById('reserver').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 150);
       } else {
-        window.scrollTo(0, vslFsScroll);
+        window.scrollTo({ top: vslFsScroll, left: 0, behavior: 'instant' });
       }
     }
 
@@ -1357,9 +1462,46 @@
        avant lui. Le seuil de 15px écarte les glissements (scroll). */
     var vslTapStart = null;
     vslFrame.addEventListener('pointerdown', function (e) {
+      showVslBar();
       if (e.target && e.target.closest && e.target.closest('.vsl-fs-close')) return;
       vslTapStart = { x: e.clientX, y: e.clientY };
     }, true);
+    // Barre de progression intelligente : visible 3 s après un toucher
+    // (ou un mouvement de souris sur ordinateur), masquée le reste du temps
+    var vslBarTimer = null;
+    function showVslBar() {
+      vslPlayer.classList.add('lp-bar-show');
+      clearTimeout(vslBarTimer);
+      vslBarTimer = setTimeout(function () { vslPlayer.classList.remove('lp-bar-show'); }, 3000);
+    }
+    if (!isMobileScreen) {
+      vslFrame.addEventListener('mousemove', showVslBar, true);
+    }
+    /* Bouton plein écran de VTurb : sur mobile il n'appelle jamais le
+       plein écran du navigateur (code VTurb : réservé aux écrans non
+       mobiles), il épingle juste le player dans la page et entre en
+       conflit avec notre plein écran → masqué. Structure interne VTurb
+       (shadow DOM fermé mais exposé via renderRoot) : si elle change, le
+       bouton réapparaît, rien ne casse. */
+    if (isMobileScreen) {
+      var vturbTries = 0;
+      var vturbHideTimer = setInterval(function () {
+        vturbTries++;
+        try {
+          /* VTurb reconstruit son player interne après le chargement de la
+             config : on re-pose le style tant qu'il manque (1 min max) */
+          var inner = vslPlayer.renderRoot && vslPlayer.renderRoot.querySelector('vturb-player');
+          var root = inner && inner.renderRoot;
+          if (root && root.querySelector('vturb-controls') && !root.querySelector('#lpHideFsBtn')) {
+            var st = document.createElement('style');
+            st.id = 'lpHideFsBtn';
+            st.textContent = 'vturb-fullscreen-button{display:none !important}';
+            root.appendChild(st);
+          }
+        } catch (err) {}
+        if (vturbTries > 120) clearInterval(vturbHideTimer);
+      }, 500);
+    }
     vslFrame.addEventListener('pointerup', function (e) {
       if (!vslTapStart) return;
       var dx = e.clientX - vslTapStart.x, dy = e.clientY - vslTapStart.y;
@@ -1489,6 +1631,7 @@
     // --- Profondeur de scroll
     var scrollFired = {};
     window.addEventListener('scroll', function () {
+      if (vslFrame.classList.contains('vsl-fs')) return; // la page défile derrière le plein écran
       var p = (window.scrollY + window.innerHeight) / document.body.scrollHeight * 100;
       [25, 50, 75, 90].forEach(function (m) {
         if (!scrollFired[m] && p >= m) { scrollFired[m] = true; track('Scroll_' + m); }
@@ -1498,7 +1641,7 @@
     // --- Sections vues (une fois chacune)
     var viewIo = new IntersectionObserver(function (entries) {
       entries.forEach(function (e) {
-        if (e.isIntersecting) {
+        if (e.isIntersecting && !vslFrame.classList.contains('vsl-fs')) {
           track('View_' + e.target.dataset.view);
           viewIo.unobserve(e.target);
         }
