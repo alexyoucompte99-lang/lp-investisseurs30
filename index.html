@@ -7,6 +7,8 @@
 <script>!function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);</script>
 <link rel="preload" href="https://scripts.converteai.net/44ddd425-da4a-4a06-a6b4-1ae5a46727c5/players/6a7ed4ea324bb568d0591b93/v4/player.js" as="script">
 <link rel="preload" href="https://scripts.converteai.net/lib/js/smartplayer-wc/v4/smartplayer.js" as="script">
+<link rel="preconnect" href="https://cdn.converteai.net">
+<link rel="preconnect" href="https://images.converteai.net">
 <link rel="dns-prefetch" href="https://cdn.converteai.net">
 <link rel="dns-prefetch" href="https://scripts.converteai.net">
 <link rel="dns-prefetch" href="https://license.vturb.com">
@@ -234,6 +236,20 @@
 
   /* ---------- VSL ---------- */
   .vsl-section { padding: 6px 0 24px; position: relative; }
+/* Preuve sociale compacte sous la video (les sections basses sont peu vues : scroll 75 % ≈ 8 % des visites) */
+.vsl-proof { margin: 14px auto 0; padding: 0 18px; max-width: 720px; text-align: center; }
+.vsl-proof .vp-quote { display: block; font-size: 0.95rem; font-style: italic; color: #0f1927; }
+.vsl-proof .vp-meta { display: block; margin-top: 6px; font-size: 0.82rem; color: rgba(15, 25, 39, 0.62); }
+.vsl-proof .vp-meta strong { color: #52836f; }
+/* Indice de lecture pendant le chargement du player : l'element .vturb-player-placeholder
+   n'est plus affiche des que le web component VTurb monte son shadow DOM */
+.vturb-player-placeholder::before { content: ""; position: absolute; top: 50%; left: 50%; width: 74px; height: 74px;
+  transform: translate(-50%, -50%); border-radius: 50%; background: rgba(128, 185, 165, 0.16);
+  border: 2px solid rgba(128, 185, 165, 0.55); animation: vslpulse 1.6s ease-in-out infinite; }
+.vturb-player-placeholder::after { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-40%, -50%);
+  border-style: solid; border-width: 13px 0 13px 22px; border-color: transparent transparent transparent #efefef; }
+@keyframes vslpulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(128, 185, 165, 0.35); } 50% { box-shadow: 0 0 0 16px rgba(128, 185, 165, 0); } }
+@media (prefers-reduced-motion: reduce) { .vturb-player-placeholder::before { animation: none; } }
 
   /* Bandeau d'urgence : deadline evergreen recalée sur minuit chaque jour */
   .deadline {
@@ -1011,6 +1027,10 @@
       <button class="vsl-fs-close" id="vslFsClose" type="button" aria-label="Quitter le plein écran">✕</button>
       <div class="vsl-rotate-hint" id="vslRotateHint" aria-hidden="true">📱 Tournez votre téléphone</div>
     </div>
+    <p class="vsl-proof fx in fx-d3">
+      <span class="vp-quote">« L'accompagnement est réel, et Thomas nous fait de vrais analyses et retours personnalisés. »</span>
+      <span class="vp-meta">Joan, membre Investisseurs 3.0 · <strong>+700</strong> investisseurs accompagnés · <strong>4,9/5</strong> sur Trustpilot</span>
+    </p>
   </div>
 </section>
 
