@@ -47,7 +47,7 @@
     var num = CLOSERS[Math.floor(Math.random() * CLOSERS.length)];
     return "https://wa.me/" + num + "?text=" + encodeURIComponent(MSG);
   }
-  var embedded = window.self !== window.top;
+  var embedded = window.self !== window.top || location.search.indexOf("ui=1") > -1;
   if (embedded) {
     document.getElementById("ui").hidden = false;
     var btn = document.getElementById("go");
