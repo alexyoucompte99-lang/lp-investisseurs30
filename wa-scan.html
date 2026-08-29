@@ -4,36 +4,65 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Ouverture de WhatsApp…</title>
+<title>WhatsApp — Le Scan Patrimoine</title>
 <style>
-  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-         background: #0d1321; color: #f5f2ea; text-align: center; }
-  .box { padding: 32px 24px; }
-  a.btn { display: inline-block; margin-top: 18px; padding: 14px 28px; border-radius: 10px;
-          background: #25D366; color: #fff; text-decoration: none; font-weight: 600; }
-  p { color: #b8b3a7; }
+  html, body { margin: 0; background: transparent;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  /* Mode plein écran (lien direct) : fond sombre pendant la redirection */
+  body.standalone { background: #0d1321; color: #f5f2ea; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center; text-align: center; }
+  body.standalone p { color: #b8b3a7; }
+  /* Mode embarqué (iframe Tally) : juste le bouton */
+  .wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 0; }
+  a.btn { display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; max-width: 420px; min-height: 58px; box-sizing: border-box;
+    padding: 15px 24px; border-radius: 14px; background: #25D366; color: #fff;
+    text-decoration: none; font-weight: 700; font-size: 17px;
+    box-shadow: 0 4px 14px rgba(37, 211, 102, .35); transition: transform .1s ease; }
+  a.btn:active { transform: scale(.98); }
+  a.btn svg { flex: none; }
 </style>
 </head>
 <body>
-<div class="box">
+<div class="wrap" id="ui" hidden>
+  <a class="btn" id="go" href="#" target="_blank" rel="noopener">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M12 2a9.9 9.9 0 0 0-8.5 15.1L2 22l5.1-1.5A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .9.9-3-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.6-6.1c-.3-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1-.2.3-.7.8-.8 1-.1.2-.3.2-.6.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4 0-.5.2-.7l.5-.6c.1-.2.1-.4 0-.5l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1.1 2.7c.1.2 1.8 2.8 4.4 3.9 2.6 1.1 2.6.7 3.1.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.6-.3z"/>
+    </svg>
+    Nous écrire sur WhatsApp
+  </a>
+</div>
+<div class="wrap" id="loading" hidden>
   <h1>Ouverture de WhatsApp…</h1>
-  <p>Si rien ne se passe, appuie sur le bouton ci-dessous.</p>
-  <a class="btn" id="go" href="#">Ouvrir WhatsApp</a>
+  <p>Si rien ne se passe : <a class="btn" id="go2" href="#">Ouvrir WhatsApp</a></p>
 </div>
 <script>
   /* Répartition aléatoire des demandes WhatsApp du Scan Patrimoine
-     entre Louis et Romain (Adrien exclu, demande d'Alex 29/08/2026). */
+     entre Louis et Romain (Adrien exclu, demande d'Alex 29/08/2026).
+     Embarquée en iframe sur la page Tally = bouton ; ouverte en direct = redirection. */
   var CLOSERS = ["33780942326", "33781240572"]; // Louis, Romain
-  var num = CLOSERS[Math.floor(Math.random() * CLOSERS.length)];
-  var msg = "Bonjour ! Je viens de faire le Scan Patrimoine et de réserver mon appel bilan. " +
-            "J'aimerais recevoir le récap de mon appel ici sur WhatsApp.";
-  var url = "https://wa.me/" + num + "?text=" + encodeURIComponent(msg);
-  document.getElementById("go").href = url;
-  window.location.replace(url);
+  var MSG = "Bonjour ! Je viens de faire le Scan Patrimoine. " +
+            "J'aimerais recevoir mon récap ici sur WhatsApp.";
+  function waUrl() {
+    var num = CLOSERS[Math.floor(Math.random() * CLOSERS.length)];
+    return "https://wa.me/" + num + "?text=" + encodeURIComponent(MSG);
+  }
+  var embedded = window.self !== window.top;
+  if (embedded) {
+    document.getElementById("ui").hidden = false;
+    var btn = document.getElementById("go");
+    btn.href = waUrl(); // pré-rempli pour clic molette / longue pression
+    btn.addEventListener("click", function () { this.href = waUrl(); });
+  } else {
+    document.body.className = "standalone";
+    document.getElementById("loading").hidden = false;
+    var url = waUrl();
+    document.getElementById("go2").href = url;
+    window.location.replace(url);
+  }
 </script>
 <noscript>
-  <p>Écris-nous sur WhatsApp : <a href="https://wa.me/33780942326">+33 7 80 94 23 26</a></p>
+  <p style="text-align:center">Écris-nous sur WhatsApp : <a href="https://wa.me/33780942326">+33 7 80 94 23 26</a></p>
 </noscript>
 </body>
 </html>
