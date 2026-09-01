@@ -28,8 +28,13 @@
      (réglage "Page de confirmation → rediriger vers une URL externe").
      Évènements envoyés par cette page :
        - PageView        (arrivée sur la page de remerciement)
-       - ThankYou_View   (évènement dédié : réservation confirmée côté navigateur,
-                          en complément de l'évènement envoyé par iClosed)
+       - Schedule        (évènement STANDARD « rendez-vous pris » : c'est celui
+                          sur lequel les ad sets optimisent, custom_event_type
+                          SCHEDULE. Envoyé une seule fois par réservation, voir
+                          plus bas ; iClosed, lui, envoie invitee_meeting_scheduled)
+       - ThankYou_View   (évènement dédié : arrivée sur la page de remerciement,
+                          rechargements compris : ne pas s'en servir pour compter
+                          les réservations, c'est Schedule qui les compte)
        - ThankYou_WhatsApp_Click (clic sur le bouton WhatsApp vers le closer)
        - ThankYou_Video_1 / 2 / 3 (vidéo de préchauffe chargée à l'écran)
      iClosed transmet dans l'URL : invitee_full_name, Invitee_email,
@@ -49,10 +54,46 @@
   fbq('init', '1625394888920444');
   /* trackSingle : sur WordPress, PixelYourSite initialise aussi son propre
      pixel ; on scope nos évènements au pixel de la LP pour ne pas polluer. */
+  /* Schedule : l'évènement d'optimisation des publicités. Il n'est envoyé que
+     si iClosed a bien transmis l'e-mail ET l'horaire du rendez-vous, donc jamais
+     sur une simple visite de la page. Son eventID est déduit de la réservation
+     elle-même : un rechargement renvoie le même identifiant, que Meta
+     déduplique, et un garde-fou localStorage évite déjà de le renvoyer depuis
+     le même appareil. Écrit sans « < », « > » ni « && » : ce script n'est pas
+     enveloppé dans un commentaire HTML et wptexturize casserait WordPress. */
   (function () {
+    function bookingId() {
+      var P = new URLSearchParams(window.location.search);
+      function param(names) {
+        var out = '';
+        names.forEach(function (n) {
+          if (!out) { var v = P.get(n); if (v) { if (v.trim()) out = v.trim(); } }
+        });
+        return out;
+      }
+      var mail = param(['Invitee_email', 'invitee_email', 'email']).toLowerCase();
+      var start = param(['event_start_time', 'start_time', 'event_start']);
+      if (!mail) return '';
+      if (!start) return '';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) return '';
+      var h = 2166136261;   /* FNV-1a, sans décalage de bits (pas de « < » ni « > ») */
+      (mail + '|' + start).split('').forEach(function (c) {
+        h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+      });
+      return 'sch_' + Math.abs(h).toString(36);
+    }
     function send() {
       fbq('trackSingle', '1625394888920444', 'PageView');
       fbq('trackSingleCustom', '1625394888920444', 'ThankYou_View');
+      var id = bookingId();
+      if (id) {
+        var deja = false;
+        try { deja = window.localStorage.getItem(id) === '1'; } catch (e) {}
+        if (!deja) {
+          try { window.localStorage.setItem(id, '1'); } catch (e) {}
+          fbq('trackSingle', '1625394888920444', 'Schedule', {}, { eventID: id });
+        }
+      }
     }
     if (window.__framed) { setTimeout(send, 1500); } else { send(); }
   })();
