@@ -87,7 +87,21 @@
         }
       }
     }
-    if (window.__framed) { setTimeout(send, 1500); } else { send(); }
+    if (window.__framed) {
+      /* Page merci affichée DANS l'iframe iClosed et remontée au niveau de la
+         page entière impossible (navigation du parent refusée) : le pixel
+         tirerait depuis une iframe tierce, ce que Safari ignore. On passe donc
+         l'empreinte de la réservation à la page hôte — l'empreinte seule,
+         jamais l'e-mail — pour qu'elle envoie Schedule en first party. Même
+         eventID des deux côtés : Meta déduplique. */
+      var idFrame = bookingId();
+      if (idFrame) {
+        var msg = { type: 'i30:booked', id: idFrame };
+        try { window.parent.postMessage(msg, '*'); } catch (e) {}
+        try { if (window.top !== window.parent) window.top.postMessage(msg, '*'); } catch (e) {}
+      }
+      setTimeout(send, 1500);
+    } else { send(); }
   })();
 </script>
 

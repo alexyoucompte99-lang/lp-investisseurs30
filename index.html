@@ -34,9 +34,17 @@
                                       Final = bouton du bas qui ramène au calendrier)
        - ExitIntent                  (souris qui part vers la barre du navigateur)
        - Footer_Click                (clic sur un lien légal)
+       - Schedule                    (évènement STANDARD « rendez-vous pris »,
+                                      envoyé dès qu'iClosed signale la
+                                      réservation depuis le calendrier intégré,
+                                      sans attendre la page merci : c'est lui
+                                      qui alimente l'optimisation des pubs.
+                                      Même eventID que celui de la page merci,
+                                      donc dédupliqué par Meta.)
      Les stats de visionnage détaillées (plays, rétention) sont dans
-     le dashboard VTurb. La réservation confirmée est envoyée par
-     iClosed via l'API Conversions ("invitee_meeting_scheduled").
+     le dashboard VTurb. Le rendez-vous remonte aussi côté serveur si
+     l'intégration API Conversions d'iClosed est branchée sur ce pixel
+     ("invitee_meeting_scheduled", évènement personnalisé).
      Les paramètres UTM de l'URL sont transmis à iClosed automatiquement.
      ============================================================ -->
 <script>
@@ -1621,18 +1629,129 @@
       }
     }
 
-    // --- Redirection après réservation. Dans une iframe, iClosed n'ouvre pas
-    //     lui-même la page de confirmation configurée : il envoie à la page
-    //     hôte un message { type: 'openInParentTab', url } (c'est ce que fait
-    //     son widget.js). On l'écoute ici et on ouvre la page merci dans cet
-    //     onglet, avec les paramètres (prénom, date, closer, UTM) qu'il ajoute.
+    /* --- Réservation iClosed : évènement Meta + redirection ---------------
+       Deux choses se jouent ici, dans cet ordre.
+
+       1) L'évènement STANDARD Schedule (« rendez-vous pris ») part de CETTE
+          page dès qu'iClosed signale la réservation. Avant, il n'était envoyé
+          que par la page merci : à chaque fois que la redirection n'avait pas
+          lieu (calendrier affiché en iframe, onglet fermé aussitôt après la
+          confirmation, pixel non chargé sur la page merci), le rendez-vous
+          apparaissait dans le dashboard iClosed mais jamais dans Meta.
+
+       2) La redirection vers la page merci. Dans une iframe, iClosed n'ouvre
+          pas lui-même la page de confirmation : il envoie à la page hôte un
+          message { type: 'openInParentTab', url } (ce que fait son widget.js).
+
+       L'eventID est l'empreinte de la réservation (e-mail + horaire), calculée
+       exactement comme sur la page merci : si les deux pages envoient
+       l'évènement, Meta déduplique. On ne pose donc PAS de garde localStorage
+       ici — mieux vaut un doublon dédupliqué qu'une conversion perdue si la
+       navigation coupe la requête du pixel.
+
+       « ?icdebug=1 » sur la LP journalise dans la console tout ce qu'iClosed
+       envoie : de quoi vérifier en une réservation test ce qui remonte.
+       Écrit sans « < », « > » ni « && » (wptexturize, voir make_wp_content.py). */
+    var IC_DEBUG = window.location.search.indexOf('icdebug=1') !== -1;
+    var bookingSent = false;
+
+    function icLog() {
+      if (!IC_DEBUG) return;
+      try { console.log.apply(console, ['[i30]'].concat([].slice.call(arguments))); } catch (e) {}
+    }
+
+    /* Empreinte de la réservation, reprise à l'identique de merci.html
+       (FNV-1a, sans décalage de bits pour ne pas écrire « < » ni « > »). */
+    function bookingIdFromUrl(url) {
+      var q = url.indexOf('?');
+      if (q === -1) return '';
+      var P = new URLSearchParams(url.slice(q + 1));
+      function param(names) {
+        var out = '';
+        names.forEach(function (n) {
+          if (!out) { var v = P.get(n); if (v) { if (v.trim()) out = v.trim(); } }
+        });
+        return out;
+      }
+      var mail = param(['Invitee_email', 'invitee_email', 'email']).toLowerCase();
+      var start = param(['event_start_time', 'start_time', 'event_start']);
+      if (!mail) return '';
+      if (!start) return '';
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) return '';
+      var h = 2166136261;
+      (mail + '|' + start).split('').forEach(function (c) {
+        h = Math.imul(h ^ c.charCodeAt(0), 16777619);
+      });
+      return 'sch_' + Math.abs(h).toString(36);
+    }
+
+    function sendSchedule(id) {
+      if (bookingSent) return;
+      bookingSent = true;
+      /* Pas d'e-mail ni d'horaire dans l'URL de confirmation : la page merci
+         ne pourra rien envoyer (son garde-fou l'en empêche), c'est donc à
+         cette page de compter la réservation, avec un identifiant de repli. */
+      if (!id) id = 'sch_lp_' + Date.now().toString(36) + Math.floor(Math.random() * 1e6).toString(36);
+      if (typeof window.fbq === 'function') {
+        window.fbq('trackSingle', '1625394888920444', 'Schedule', {}, { eventID: id });
+      }
+      icLog('Schedule envoyé', id);
+    }
+
+    /* Un message d'iClosed annonce-t-il une réservation ? On reste strict :
+       les libellés de chargement du calendrier (« scheduler-ready »...) ne
+       doivent surtout pas compter comme une conversion. */
+    function looksLikeBooking(d) {
+      var txt = '';
+      ['type', 'event', 'eventName', 'name', 'action', 'status', 'message'].forEach(function (k) {
+        if (typeof d[k] === 'string') txt += ' ' + d[k];
+      });
+      txt = txt.toLowerCase().replace(/[^a-z]/g, '');
+      if (!txt) return false;
+      if (txt.indexOf('cancel') !== -1) return false;
+      var signaux = ['openinparenttab', 'booked', 'bookingcomplete', 'bookingsuccess',
+                     'bookingconfirm', 'meetingscheduled', 'eventscheduled',
+                     'appointmentscheduled', 'schedulingcomplete', 'schedulesuccess'];
+      var hit = false;
+      signaux.forEach(function (s) { if (txt.indexOf(s) !== -1) hit = true; });
+      return hit;
+    }
+
     window.addEventListener('message', function (e) {
-      if (e.origin !== 'https://app.iclosed.io') return;
       var ic = document.querySelector('.iclosed-embed iframe');
-      if (ic && ic.contentWindow && e.source !== ic.contentWindow) return;
-      var d = e.data || {};
-      if (d.type === 'openInParentTab' && typeof d.url === 'string' && d.url.indexOf('https://') === 0) {
-        window.location.href = d.url;
+      var deIclosed = e.origin === 'https://app.iclosed.io';
+      var deNous = e.origin === window.location.origin;
+      if (!deIclosed) { if (!deNous) return; }
+      /* Seule notre iframe de réservation a droit à la parole. */
+      if (ic) { if (ic.contentWindow) { if (e.source !== ic.contentWindow) { if (!deNous) return; } } }
+
+      var d = e.data;
+      if (typeof d === 'string') {
+        try { d = JSON.parse(d); } catch (err) { d = { type: d }; }
+      }
+      if (!d) return;
+      if (typeof d !== 'object') return;
+      icLog('message', e.origin, d);
+
+      /* La page merci quand iClosed l'a ouverte DANS l'iframe au lieu de
+         demander l'ouverture dans l'onglet : elle nous passe l'empreinte de la
+         réservation (jamais l'e-mail) pour que l'évènement parte d'ici, en
+         contexte first party — Safari ignore le pixel dans une iframe tierce. */
+      if (d.type === 'i30:booked') {
+        if (typeof d.id === 'string') { if (/^sch_[a-z0-9]+$/.test(d.id)) sendSchedule(d.id); }
+        return;
+      }
+      if (!deIclosed) return;
+
+      var url = '';
+      if (typeof d.url === 'string') { if (d.url.indexOf('https://') === 0) url = d.url; }
+      if (looksLikeBooking(d)) sendSchedule(bookingIdFromUrl(url));
+      if (d.type === 'openInParentTab') {
+        if (url) {
+          /* Petit délai : le temps que la requête du pixel parte avant que la
+             navigation ne l'annule (l'eventID protège du double comptage). */
+          setTimeout(function () { window.location.href = url; }, 400);
+        }
       }
     });
     function revealCta() {
