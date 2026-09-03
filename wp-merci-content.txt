@@ -935,6 +935,32 @@
       document.getElementById('rdvCal').hidden = false;
     }
 
+    // --- Pont Apps Script vers l'onglet « Confirmations WhatsApp » du Sheet
+    //     closing (clé publique limitée à cet usage). Deux statuts y sont
+    //     écrits :
+    //       BOOKING : à l'ouverture de cette page, donc pour CHAQUE réservation.
+    //                 C'est cette ligne qui porte les UTM : sans elle, un call
+    //                 pris sans clic WhatsApp n'apparaissait nulle part et la
+    //                 pub d'origine était perdue.
+    //       CLIC    : clic sur le bouton WhatsApp. C'est ce que la console
+    //                 « Calls à venir » lit pour voir qui a confirmé, le closer
+    //                 cochant « reçu » quand le message arrive vraiment.
+    var PONT = { url: 'https://script.google.com/macros/s/AKfycbyTdIBuoj50rJ5IxRy-mmT4XuK585jqC985KbsUTksUJlO2Tn_E4Ys3LHYFAdb_sui_/exec', key: 'wa-d9705869f93969f073de796c' };
+    var utmTxt = [param(['utm_campaign']), param(['utm_content'])].filter(Boolean).join(' / ').slice(0, 100);
+    function notePont(statut, closerName) {
+      var body = JSON.stringify({
+        key: PONT.key, what: 'wa_confirm', statut: statut, source: 'page',
+        lead: (full || '').slice(0, 80), email: (mail || '').slice(0, 80),
+        closer: (closerName || '').slice(0, 40),
+        call: start ? start.toISOString() : (startRaw || '').slice(0, 40), utm: utmTxt
+      });
+      var sent = false;
+      try { if (navigator.sendBeacon) sent = navigator.sendBeacon(PONT.url, body); } catch (e) {}
+      if (!sent) {
+        try { fetch(PONT.url, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body: body }); } catch (e2) {}
+      }
+    }
+
     // --- Closer assigné (paramètre assigned_to d'iClosed) : carte + WhatsApp.
     //     Les numéros sont ici ; ajouter une ligne par nouveau closer.
     var PHOTOS = 'https://alexyoucompte99-lang.github.io/lp-investisseurs30/assets/';
@@ -948,6 +974,9 @@
     try { normAssigned = normAssigned.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) {}
     var closerKey = null;
     Object.keys(CLOSERS).forEach(function (k) { if (!closerKey) { if (normAssigned.indexOf(k) > -1) closerKey = k; } });
+    // Nom repris tel quel dans le Sheet : celui de la table si le closer est
+    // connu, sinon ce qu'iClosed a transmis (nouveau closer pas encore ajouté).
+    var closerLabel = assigned;
     if (closerKey) {
       var c = CLOSERS[closerKey];
       var cFirst = c.name.split(' ')[0];
@@ -977,30 +1006,38 @@
         + (when ? ' du ' + when : '') + '. À bientôt !';
       var waBtn = document.getElementById('waBtn');
       waBtn.href = 'https://wa.me/' + c.wa + '?text=' + encodeURIComponent(waMsg);
-      // Suivi closing : chaque clic est noté dans l'onglet « Confirmations
-      // WhatsApp » du Sheet closing (pont Apps Script, clé publique limitée
-      // à cet usage). La console « Calls à venir » s'en sert pour voir qui a
-      // cliqué, et le closer coche « reçu » quand le message arrive vraiment.
-      var PONT = { url: 'https://script.google.com/macros/s/AKfycbyTdIBuoj50rJ5IxRy-mmT4XuK585jqC985KbsUTksUJlO2Tn_E4Ys3LHYFAdb_sui_/exec', key: 'wa-d9705869f93969f073de796c' };
-      var utmTxt = [param(['utm_campaign']), param(['utm_content'])].filter(Boolean).join(' / ').slice(0, 100);
-      function notePont() {
-        var body = JSON.stringify({
-          key: PONT.key, what: 'wa_confirm', statut: 'CLIC', source: 'page',
-          lead: (full || '').slice(0, 80), email: (mail || '').slice(0, 80),
-          closer: c.name, call: start ? start.toISOString() : (startRaw || '').slice(0, 40), utm: utmTxt
-        });
-        var sent = false;
-        try { if (navigator.sendBeacon) sent = navigator.sendBeacon(PONT.url, body); } catch (e) {}
-        if (!sent) {
-          try { fetch(PONT.url, { method: 'POST', mode: 'no-cors', keepalive: true, headers: { 'Content-Type': 'text/plain' }, body: body }); } catch (e2) {}
-        }
-      }
+      closerLabel = c.name;
       var noted = false;
       waBtn.addEventListener('click', function () {
         if (typeof window.fbq === 'function') window.fbq('trackSingleCustom', '1625394888920444', 'ThankYou_WhatsApp_Click');
-        if (!noted) { noted = true; notePont(); }
+        if (!noted) { noted = true; notePont('CLIC', closerLabel); }
       });
       document.getElementById('closer').hidden = false;
+    }
+
+    // --- Réservation notée dès l'ouverture de la page, plus seulement au clic
+    //     WhatsApp : le Sheet reçoit ainsi une ligne par call pris, avec l'UTM
+    //     de la pub d'origine. Envoyée seulement si iClosed a bien transmis
+    //     l'e-mail ET l'horaire, donc jamais sur une simple visite de la page.
+    //     Une seule ligne par réservation : l'identifiant est déduit de la
+    //     réservation elle-même, et un rechargement depuis le même appareil ne
+    //     renvoie rien. Dans l'iframe iClosed, l'envoi est différé le temps que
+    //     la remontée en pleine page prenne le relais (même garde-fou, donc pas
+    //     de doublon) ; si la remontée échoue, l'iframe note quand même.
+    if (mail && start && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)) {
+      var h = 2166136261;   // FNV-1a, comme l'identifiant de l'évènement Schedule
+      (mail.toLowerCase() + '|' + startRaw).split('').forEach(function (ch) {
+        h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+      });
+      var pontId = 'pont_' + Math.abs(h).toString(36);
+      var notePontBooking = function () {
+        var deja = false;
+        try { deja = window.localStorage.getItem(pontId) === '1'; } catch (e) {}
+        if (deja) return;
+        try { window.localStorage.setItem(pontId, '1'); } catch (e) {}
+        notePont('BOOKING', closerLabel);
+      };
+      if (window.__framed) { setTimeout(notePontBooking, 1500); } else { notePontBooking(); }
     }
 
     // --- Vidéos de préchauffe : le player ne se charge que quand il arrive
